@@ -65,6 +65,7 @@
     "numberChecker": "Numara Denetleyicisi",
     "webhooks": "Webhook'lar",
     "templates": "Şablonlar",
+    "flows": "Akışlar",
     "apiKeys": "API Anahtarları",
     "messageTester": "Mesaj Test Aracı",
     "infrastructure": "Altyapı",
@@ -759,6 +760,135 @@
       "copied": "Şablon adı kopyalandı"
     },
     "sessionSelect": "Oturum"
+  },
+  "flows": {
+    "title": "Akışlar",
+    "subtitle": "Her WhatsApp oturumu için çok adımlı otomatik yanıt konuşmaları oluşturun",
+    "intro": "Akış, tek mesajlık otomatik yanıt kurallarından önce yanıt verir. Bir sohbet akışın içindeyken veya bir kişiye devredilmişken, kurallar o sohbette sessiz kalır.",
+    "sessionSelect": "Oturum",
+    "noSessions": "Oturum yok",
+    "newFlow": "Yeni akış",
+    "edit": "Düzenle",
+    "stepCount": "Adımlar: {{count}}",
+    "timeoutShort": "{{minutes}} dk sessizlikten sonra baştan başlar",
+    "deleteFlow": "{{name}} sil",
+    "deleteTitle": "Akışı sil",
+    "deleteConfirm": "\"{{name}}\" silinsin mi? İçindeki sohbetler bulundukları yerde durur.",
+    "empty": {
+      "title": "Henüz akış yok",
+      "description": "Müşterileri karşılamak, menü göstermek, bilgi toplamak veya ekibinize devretmek için bir akış oluşturun.",
+      "noSessionsTitle": "Henüz oturum yok",
+      "noSessionsDesc": "Önce bir WhatsApp oturumu oluşturup bağlayın. Her akış bir oturuma aittir.",
+      "forbiddenTitle": "Operatör erişimi gerekli",
+      "forbiddenDesc": "Akışlar yalnızca operatör veya yönetici API anahtarıyla görüntülenip düzenlenebilir.",
+      "loadErrorTitle": "Akışlar yüklenemedi"
+    },
+    "toasts": {
+      "saved": "Akış kaydedildi",
+      "saveFailed": "Akış kaydedilmedi",
+      "deleted": "Akış silindi",
+      "deleteFailed": "Akış silinmedi"
+    },
+    "editor": {
+      "back": "Tüm akışlar",
+      "timeout": "Yeniden başlatma (dakika)",
+      "enabled": "Etkin",
+      "save": "Kaydet",
+      "unsaved": "Kaydedilmemiş değişiklikler",
+      "problemsTitle": "Kaydetmeden önce düzeltin:",
+      "addStep": "Adım ekle",
+      "discardTitle": "Değişiklikler atılsın mı?",
+      "discardConfirm": "Bu akıştaki değişiklikleriniz kaydedilmedi.",
+      "keepEditing": "Düzenlemeye devam et",
+      "discard": "At"
+    },
+    "types": {
+      "trigger": {
+        "title": "Başlangıç",
+        "description": "Akışın ne zaman başladığı."
+      },
+      "message": {
+        "title": "Mesaj",
+        "description": "Metin gönderin, isterseniz seçeneklerle."
+      },
+      "collect": {
+        "title": "Soru sor",
+        "description": "Bir yanıt bekleyip kaydedin."
+      },
+      "condition": {
+        "title": "Koşul",
+        "description": "Çalışma saatlerine veya anahtar kelimelere göre dallanın."
+      },
+      "handoff": {
+        "title": "Kişiye devret",
+        "description": "Bir kişinin yanıtlaması için botu duraklatın."
+      }
+    },
+    "outputs": {
+      "next": "Sonra",
+      "yes": "Evet",
+      "no": "Hayır"
+    },
+    "summary": {
+      "anyMessage": "Herhangi bir mesaj",
+      "keywords": "Anahtar kelimeler: {{keywords}}",
+      "hours": "Açık {{start}}–{{end}}",
+      "empty": "Henüz ayarlanmadı",
+      "ends": "Akışı bitirir"
+    },
+    "inspector": {
+      "title": "Adım ayarları",
+      "nothingSelected": "Düzenlemek için bir adım seçin.",
+      "howTo": "Bağlamak için bir adımın yanındaki noktadan başka bir adıma sürükleyin. Seçili adımı veya bağlantıyı kaldırmak için Delete tuşuna basın.",
+      "variablesHint": "Değişkenler:",
+      "startWhen": "Şu durumda başla",
+      "matchAny": "herhangi bir mesaj geldiğinde (sohbet bir akışta değilse)",
+      "matchKeywords": "mesajda bir anahtar kelime olduğunda",
+      "keywords": "Anahtar kelimeler",
+      "keywordsPlaceholder": "merhaba, selam, menü",
+      "triggerKeywordsHint": "Virgülle ayırın. Anahtar kelime, zaten akışta olan bir sohbet için de akışı yeniden başlatır (en fazla 5 dakikada bir).",
+      "messageText": "Mesaj",
+      "choices": "Seçenekler",
+      "choicesHint": "Seçenek varsa akış bir yanıt bekler. Müşteri numarayı, etiketi veya bir anahtar kelimeyi yazabilir. Seçenek yoksa akış hemen devam eder.",
+      "choiceLabel": "Seçenek {{n}} etiketi",
+      "choiceKeywords": "Seçenek {{n}} anahtar kelimeleri",
+      "choiceKeywordsPlaceholder": "Bu seçenek için başka kelimeler (isteğe bağlı)",
+      "removeChoice": "Seçenek {{n}} kaldır",
+      "addChoice": "Seçenek ekle",
+      "useButtons": "Seçenekleri düğme olarak göster",
+      "useButtonsHint": "Baileys motoru ve en fazla {{max}} seçenek gerekir. Numaralı liste her zaman eklenir, böylece düğmeler görünmese de mesaj çalışır.",
+      "tooManyButtons": "Düğmeler en fazla {{max}} seçeneğe izin verir.",
+      "buttonLabelTooLong": "Düğme etiketi en fazla {{max}} karakter olabilir.",
+      "invalidText": "Hiçbir seçenek eşleşmezse yanıt",
+      "invalidTextPlaceholder": "Lütfen seçeneklerden birini seçin.",
+      "question": "Soru",
+      "variable": "Yanıtı şu adla kaydet",
+      "variableHint": "Yanıtı eklemek için sonraki adımlarda {{name}} kullanın.",
+      "checkWhat": "Kontrol et",
+      "kindHours": "Çalışma saatleri",
+      "kindKeywords": "Mesajdaki anahtar kelimeler",
+      "conditionKeywordsHint": "Bu adıma gelen mesaj bu kelimelerden birini içeriyorsa evet.",
+      "timezone": "Saat dilimi",
+      "days": "Açık günler",
+      "opens": "Açılış",
+      "closes": "Kapanış",
+      "hoursHint": "Bu saatler içinde evet. Kapanış açılıştan önceyse gece yarısını geçer.",
+      "handoffText": "Müşteriye mesaj",
+      "silentFor": "Bot şu süre sessiz kalır (dakika)",
+      "silentForHint": "O zamana kadar bot bu sohbete yanıt vermez, böylece ekibiniz yanıtlayabilir.",
+      "notifyChat": "Bu numarayı bilgilendir (isteğe bağlı)",
+      "notifyChatHint": "Ülke koduyla telefon numarası veya @g.us ile biten grup kimliği.",
+      "notifyText": "Bildirim mesajı",
+      "deleteStep": "Adımı sil"
+    },
+    "defaults": {
+      "name": "Yeni akış",
+      "message": "Merhaba! Size nasıl yardımcı olabiliriz?",
+      "collect": "Lütfen sorunuzu yazın.",
+      "handoff": "Teşekkürler! Ekibimizden biri yakında yanıt verecek.",
+      "notify": "{{phone}} numarasından yeni devir",
+      "choice": "Seçenek {{n}}"
+    }
   },
   "apiKeys": {
     "title": "API Anahtarları",

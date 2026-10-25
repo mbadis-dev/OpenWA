@@ -517,6 +517,44 @@ CREATE TABLE automation_rules (
 
 ---
 
+### 5.3.2b automation_flows and automation_flow_states
+
+Multi-step autoreply flows drawn in the dashboard's Flows page (see 06, 6.4.16a). `definition` holds the
+graph in the React Flow shape and is validated as a whole on every write. `automation_flow_states`
+remembers where each chat is, so a restart does not drop a customer halfway through a menu; its
+`sessionId` is provenance rather than a foreign key, as on `chat_states`. Times there are epoch
+milliseconds.
+
+```sql
+CREATE TABLE automation_flows (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    "sessionId" VARCHAR NOT NULL REFERENCES sessions(id) ON DELETE CASCADE,
+    name VARCHAR(100) NOT NULL,
+    enabled BOOLEAN NOT NULL DEFAULT true,
+    definition TEXT NOT NULL,             -- JSON { nodes, edges }
+    "timeoutMinutes" INTEGER NOT NULL DEFAULT 60,   -- idle minutes before a chat starts over
+    "createdAt" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
+    "updatedAt" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW()
+);
+
+CREATE TABLE automation_flow_states (
+    "sessionId" VARCHAR NOT NULL,
+    "chatId" VARCHAR NOT NULL,
+    "flowId" VARCHAR,                     -- null once the flow ended
+    "nodeId" VARCHAR,                     -- the step waiting for a reply; null once the flow ended
+    variables TEXT,                       -- JSON of collected answers
+    "invalidCount" INTEGER NOT NULL DEFAULT 0,
+    "lastInvalidAt" BIGINT,
+    "lastMessageAt" BIGINT,               -- the flow timeout runs from here
+    "startedAt" BIGINT,                   -- (re)starts are rate-limited against it
+    "handoffUntil" BIGINT,                -- the bot stays silent in the chat until then
+    "updatedAt" TIMESTAMP NOT NULL DEFAULT NOW(),
+    PRIMARY KEY ("sessionId", "chatId")
+);
+```
+
+---
+
 ### 5.3.3 messages
 
 Stores message history. With `STORE_EPHEMERAL_MESSAGES=false`, a message received in a disappearing-messages chat is neither stored nor dispatched, a history sync skips such messages, and the echo of a send made from the linked phone there is dispatched but not stored. A send made through the API's message send routes into such a chat (single or bulk) is still stored, because those routes write their own row. A product send (`POST .../messages/send-product`) writes none and is dropped like a phone-side send (see [06 - API Specification](./06-api-specification.md)). This is a **plain (non-partitioned)** table — the same schema on SQLite and PostgreSQL.
@@ -936,7 +974,8 @@ src/database/migrations/           # data connection (pluggable)
 ├── 1791100000000-AddIntegrationDeliveryFailureDeliveryIndex.ts   # (pluginId, instanceId, deliveryId) index for the dead-letter guards
 ├── 1791200000000-AddWebhookOutboxSessionIndex.ts   # (sessionId) index for the per-session outbox delete
 ├── 1791300000000-BackfillLegacyMessageTypes.ts   # converts raw wwebjs message types to the neutral vocabulary, once
-└── 1791400000000-AddLidMappingReportSource.ts   # distinguishes mapping reports from cached display data
+├── 1791400000000-AddLidMappingReportSource.ts   # distinguishes mapping reports from cached display data
+└── 1791500000000-AddAutomationFlows.ts           # automation_flows (FKs sessions ON DELETE CASCADE) + automation_flow_states
 ```
 
 > [!NOTE]

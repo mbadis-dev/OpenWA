@@ -22,6 +22,7 @@ import { IntegrationDeliveryFailure } from '../integration/entities/integration-
 import { StatusUpdate } from '../status-store/entities/status-update.entity';
 import { SendIdempotencyKey } from '../message/entities/send-idempotency-key.entity';
 import { AutomationRule } from '../automation/entities/automation-rule.entity';
+import { AutomationFlow } from '../automation/entities/automation-flow.entity';
 import { postgresUtcExtra } from '../../database/postgres-utc';
 import { captureSessionWrites } from '../../common/utils/session-write-scope';
 
@@ -72,6 +73,7 @@ describePostgres('InfraDataController.importData (postgres)', () => {
         IntegrationDeliveryFailure,
         StatusUpdate,
         AutomationRule,
+        AutomationFlow,
         SendIdempotencyKey,
       ],
       synchronize: true,

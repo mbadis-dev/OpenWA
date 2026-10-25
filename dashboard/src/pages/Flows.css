@@ -1,0 +1,621 @@
+.flows-page {
+  width: 100%;
+  padding: 2rem;
+  overflow-x: hidden;
+}
+
+.flows-page.flows-loading,
+.flows-page .flows-empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.flows-page.flows-loading {
+  min-height: 400px;
+}
+
+.flows-page .flows-session-select {
+  min-width: 220px;
+  max-width: 20rem;
+}
+
+.flows-page .page-header .btn-primary {
+  white-space: nowrap;
+}
+
+.flows-page .flows-empty {
+  flex-direction: column;
+  gap: 0.75rem;
+  min-height: 320px;
+  padding: 2rem;
+  border: 1px dashed var(--border);
+  border-radius: 8px;
+  background: var(--bg-white);
+  color: var(--text-secondary);
+  text-align: center;
+}
+
+.flows-page .flows-empty h3 {
+  margin: 0;
+  color: var(--text-primary);
+}
+
+.flows-page .flows-empty p {
+  max-width: 36rem;
+  margin: 0;
+}
+
+.flows-page .flows-intro {
+  max-width: 48rem;
+  margin: 0 0 1rem;
+  color: var(--text-secondary);
+}
+
+.flows-page .flows-list {
+  display: grid;
+  gap: 0.75rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.flows-page .flows-card {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 1.25rem;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--bg-white);
+  box-shadow: var(--shadow-sm);
+}
+
+.flows-page .flows-card-main {
+  flex: 1;
+  min-width: 0;
+}
+
+.flows-page .flows-card-main h3 {
+  margin: 0;
+  overflow: hidden;
+  color: var(--text-primary);
+  font-size: 1rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.flows-page .flows-card-main p {
+  margin: 0.25rem 0 0;
+  color: var(--text-muted);
+  font-size: 0.8125rem;
+}
+
+.flows-page .flows-card-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* Shared controls */
+
+.flows-page .icon-btn {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--bg-white);
+  color: var(--text-secondary);
+}
+
+.flows-page .icon-btn:hover {
+  background: var(--bg-light);
+  color: var(--text-primary);
+}
+
+.flows-page .icon-btn.danger:hover {
+  border-color: rgba(239, 68, 68, 0.3);
+  background: rgba(239, 68, 68, 0.12);
+  color: var(--error-text);
+}
+
+.flows-page svg {
+  flex-shrink: 0;
+}
+
+.flows-page .flow-checkbox {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--text-primary);
+  font-size: 0.875rem;
+  white-space: nowrap;
+}
+
+.flows-page .flow-checkbox input {
+  width: 16px;
+  height: 16px;
+  margin: 0;
+  accent-color: var(--primary);
+}
+
+.flows-page .form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+}
+
+.flows-page .form-group label,
+.flows-page .flow-fieldset legend {
+  color: var(--text-secondary);
+  font-size: 0.8125rem;
+  font-weight: 700;
+}
+
+.flows-page .form-group input,
+.flows-page .form-group textarea,
+.flows-page .flow-choice-fields input {
+  width: 100%;
+  padding: 0.5rem 0.625rem;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background-color: var(--bg-light);
+  color: var(--text-primary);
+  font: inherit;
+  font-size: 0.875rem;
+}
+
+.flows-page .form-group textarea {
+  line-height: 1.5;
+  resize: vertical;
+}
+
+.flows-page .form-group input:focus,
+.flows-page .form-group textarea:focus,
+.flows-page .flow-choice-fields input:focus {
+  outline: none;
+  border-color: var(--focus-ring);
+  background-color: var(--bg-white);
+  box-shadow: 0 0 0 3px var(--primary-soft);
+}
+
+.flows-page .flow-select {
+  width: 100%;
+}
+
+.flows-page .flow-hint,
+.flows-page .flow-muted {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 0.75rem;
+  line-height: 1.45;
+}
+
+.flows-page .flow-hint code {
+  margin-inline-start: 0.25rem;
+  padding: 0 0.25rem;
+  border-radius: 4px;
+  background-color: var(--bg-light);
+  color: var(--text-secondary);
+  font-size: 0.75rem;
+}
+
+.flows-page .flow-warning {
+  margin: 0;
+  color: var(--warning-text);
+  font-size: 0.75rem;
+}
+
+/* Editor */
+
+.flows-page.flows-page-editing {
+  padding: 1rem;
+}
+
+.flows-page .flow-editor {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  height: calc(100vh - 2rem);
+  min-height: 560px;
+}
+
+.flows-page .flow-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 0.75rem 1rem;
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--bg-white);
+}
+
+.flows-page .flow-name-field {
+  flex: 1 1 14rem;
+  min-width: 10rem;
+}
+
+.flows-page .flow-timeout-field {
+  width: 9rem;
+}
+
+.flows-page .flow-enabled-field {
+  padding-bottom: 0.5rem;
+}
+
+.flows-page .flow-toolbar-end {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-inline-start: auto;
+}
+
+.flows-page .flow-unsaved {
+  color: var(--warning-text);
+  font-size: 0.8125rem;
+  font-weight: 600;
+}
+
+.flows-page .flow-problems {
+  display: flex;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  border-radius: 8px;
+  background: rgba(239, 68, 68, 0.08);
+  color: var(--error-text);
+  font-size: 0.875rem;
+}
+
+.flows-page .flow-problem-link {
+  padding: 0;
+  border: none;
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-align: start;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.flows-page .flow-problem-link:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+}
+
+.flows-page .flow-problems ul {
+  margin: 0.25rem 0 0;
+  padding-inline-start: 1.25rem;
+}
+
+.flows-page .flow-workspace {
+  display: grid;
+  grid-template-columns: 200px minmax(0, 1fr) 320px;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--bg-white);
+}
+
+.flows-page .flow-palette {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 0.75rem;
+  overflow-y: auto;
+  border-inline-end: 1px solid var(--border);
+  background: var(--bg-light);
+}
+
+.flows-page .flow-palette h3,
+.flows-page .flow-inspector h3 {
+  margin: 0;
+  color: var(--text-secondary);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.flows-page .flow-palette-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  width: 100%;
+  padding: 0.625rem;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--bg-white);
+  color: var(--text-primary);
+  text-align: start;
+  cursor: pointer;
+}
+
+.flows-page .flow-palette-item:hover {
+  border-color: var(--primary);
+}
+
+.flows-page .flow-palette-item:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+}
+
+.flows-page .flow-palette-item span {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+  min-width: 0;
+}
+
+.flows-page .flow-palette-item strong {
+  font-size: 0.8125rem;
+}
+
+.flows-page .flow-palette-item small {
+  color: var(--text-muted);
+  font-size: 0.6875rem;
+  line-height: 1.35;
+}
+
+.flows-page .flow-canvas {
+  position: relative;
+  min-width: 0;
+  min-height: 0;
+}
+
+.flows-page .flow-canvas .react-flow {
+  --xy-background-color: var(--bg-light);
+  --xy-edge-stroke: var(--text-muted);
+  --xy-edge-stroke-selected: var(--primary);
+  --xy-handle-background-color: var(--primary);
+  --xy-handle-border-color: var(--bg-white);
+}
+
+/* Steps on the canvas */
+
+.flows-page .flow-node {
+  width: 240px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--bg-white);
+  box-shadow: var(--shadow-sm);
+  color: var(--text-primary);
+  font-size: 0.8125rem;
+}
+
+.flows-page .flow-node.selected {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px var(--primary-soft);
+}
+
+.flows-page .flow-node-header {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.5rem 0.75rem;
+  border-bottom: 1px solid var(--border);
+  border-radius: 8px 8px 0 0;
+  background: var(--bg-light);
+  color: var(--text-secondary);
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.flows-page .flow-node-trigger .flow-node-header {
+  background: var(--primary-soft);
+  color: var(--primary-text);
+}
+
+.flows-page .flow-node-handoff .flow-node-header {
+  color: var(--warning-text);
+}
+
+.flows-page .flow-node-summary {
+  display: -webkit-box;
+  padding: 0.5rem 0.75rem;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  line-height: 1.4;
+  overflow-wrap: anywhere;
+}
+
+.flows-page .flow-node-outputs {
+  margin: 0;
+  padding: 0 0 0.375rem;
+  list-style: none;
+}
+
+.flows-page .flow-node-outputs li {
+  position: relative;
+  padding-block: 0.25rem;
+  padding-inline: 0.75rem 1.25rem;
+  border-top: 1px dashed var(--border);
+  color: var(--text-secondary);
+  font-size: 0.75rem;
+}
+
+.flows-page .flow-node-outputs li span {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.flows-page .flow-node-end {
+  padding: 0.25rem 0.75rem 0.5rem;
+  color: var(--text-muted);
+  font-size: 0.75rem;
+  font-style: italic;
+}
+
+.flows-page .flow-node .react-flow__handle {
+  width: 10px;
+  height: 10px;
+}
+
+/* Inspector */
+
+.flows-page .flow-inspector {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
+  border-inline-start: 1px solid var(--border);
+}
+
+.flows-page .flow-inspector-empty {
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 1.5rem;
+  color: var(--text-secondary);
+  text-align: center;
+}
+
+.flows-page .flow-inspector-empty p {
+  margin: 0;
+}
+
+.flows-page .flow-inspector-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.625rem;
+  padding: 0.875rem 1rem;
+  border-bottom: 1px solid var(--border);
+  color: var(--text-secondary);
+}
+
+.flows-page .flow-inspector-header p {
+  margin: 0.25rem 0 0;
+  color: var(--text-muted);
+  font-size: 0.75rem;
+}
+
+.flows-page .flow-inspector-body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 1rem;
+  overflow-y: auto;
+}
+
+.flows-page .flow-inspector-footer {
+  padding: 0.75rem 1rem;
+  border-top: 1px solid var(--border);
+}
+
+.flows-page .flow-fieldset {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: none;
+}
+
+.flows-page .flow-choice {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+}
+
+.flows-page .flow-choice-number {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 1.5rem;
+  height: 2.125rem;
+  color: var(--text-muted);
+  font-weight: 700;
+}
+
+.flows-page .flow-choice-fields {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 0.25rem;
+  min-width: 0;
+}
+
+.flows-page .flow-add-choice {
+  align-self: flex-start;
+}
+
+.flows-page .flow-days {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 0.875rem;
+}
+
+.flows-page .flow-time-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+}
+
+/* Narrower screens: the palette becomes a row, the settings move under the canvas. */
+@media (max-width: 1100px) {
+  .flows-page .flow-workspace {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto minmax(420px, 60vh) auto;
+    overflow: visible;
+  }
+
+  .flows-page .flow-editor {
+    height: auto;
+  }
+
+  .flows-page .flow-palette {
+    flex-direction: row;
+    overflow-x: auto;
+    border-inline-end: none;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .flows-page .flow-palette h3 {
+    display: none;
+  }
+
+  .flows-page .flow-palette-item {
+    width: auto;
+    min-width: 11rem;
+  }
+
+  .flows-page .flow-inspector {
+    border-inline-start: none;
+    border-top: 1px solid var(--border);
+  }
+}
+
+@media (max-width: 640px) {
+  .flows-page {
+    padding: 1rem;
+  }
+
+  .flows-page .flows-card {
+    flex-wrap: wrap;
+  }
+
+  .flows-page .flows-card-main {
+    flex-basis: 100%;
+  }
+
+  .flows-page .flow-toolbar-end {
+    width: 100%;
+    justify-content: flex-end;
+  }
+}

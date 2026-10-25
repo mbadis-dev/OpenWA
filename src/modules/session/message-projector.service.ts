@@ -25,6 +25,7 @@ import { resolveFeatureFlags } from '../../config/feature-flags';
 import { StatusStoreService } from '../status-store/status-store.service';
 import { ChatMediaArchiveService } from '../chat-media/chat-media-archive.service';
 import { AutomationRulesService } from '../automation/automation-rules.service';
+import { AutomationFlowsService } from '../automation/automation-flows.service';
 import { buildIncomingStatus } from '../status-store/incoming-status';
 import type { StatusUpdate } from '../status-store/entities/status-update.entity';
 import {
@@ -309,6 +310,9 @@ export class MessageProjector {
     @Optional()
     private readonly automationRules?: AutomationRulesService,
     @Optional() private readonly lidMappingStore?: LidMappingStoreService,
+    // Optional like the rules. Absent simply means no flows run and every message reaches the rules.
+    @Optional()
+    private readonly automationFlows?: AutomationFlowsService,
   ) {
     this.mutationProjector = new MessageMutationProjector(
       this.messageRepository,
@@ -1183,11 +1187,22 @@ export class MessageProjector {
     if (!announced) return;
     // Dispatch to webhooks with potentially modified message
     void this.webhookService.dispatch(id, 'message.received', announced);
-    // Autoreply rules ride the same at-most-once dispatch (the insert oracle above dedupes engine
-    // re-fires) and stay fail-open like the webhook: a broken rule must never break the receive path.
-    void this.automationRules?.evaluateInbound(id, announced).catch(() => undefined);
+    // Autoreply flows and rules ride the same at-most-once dispatch (the insert oracle above dedupes
+    // engine re-fires) and stay fail-open like the webhook: a broken one must never break the receive path.
+    void this.runAutomation(id, announced);
     // Emit real-time event to WebSocket clients
     this.eventsGateway.emitMessage(id, announced);
+  }
+
+  /**
+   * Flows first: a chat inside a flow, or handed to a person, gets no rule reply on top. Without a flows
+   * service the rules are evaluated at once, exactly as before flows existed.
+   */
+  private async runAutomation(sessionId: string, message: Record<string, unknown>): Promise<void> {
+    if (this.automationFlows && (await this.automationFlows.handleInbound(sessionId, message).catch(() => false))) {
+      return;
+    }
+    await this.automationRules?.evaluateInbound(sessionId, message).catch(() => undefined);
   }
 
   /**

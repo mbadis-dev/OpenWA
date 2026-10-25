@@ -67,6 +67,7 @@
     "numberChecker": "Verifica numeri",
     "webhooks": "Webhook",
     "templates": "Modelli",
+    "flows": "Flussi",
     "apiKeys": "Chiavi API",
     "messageTester": "Messaggio di prova",
     "infrastructure": "Infrastruttura",
@@ -765,6 +766,135 @@
       "copied": "Nome del modello copiato"
     },
     "sessionSelect": "Sessione"
+  },
+  "flows": {
+    "title": "Flussi",
+    "subtitle": "Crea conversazioni di risposta automatica in più passaggi per ogni sessione WhatsApp",
+    "intro": "Un flusso risponde prima delle regole a messaggio singolo. Finché una chat è in un flusso o affidata a una persona, le regole tacciono in quella chat.",
+    "sessionSelect": "Sessione",
+    "noSessions": "Nessuna sessione",
+    "newFlow": "Nuovo flusso",
+    "edit": "Modifica",
+    "stepCount": "Passaggi: {{count}}",
+    "timeoutShort": "Ricomincia dopo {{minutes}} min di silenzio",
+    "deleteFlow": "Elimina {{name}}",
+    "deleteTitle": "Elimina flusso",
+    "deleteConfirm": "Eliminare «{{name}}»? Le chat al suo interno si fermano dove sono.",
+    "empty": {
+      "title": "Ancora nessun flusso",
+      "description": "Crea un flusso per accogliere i clienti, mostrare un menu, raccogliere i loro dati o passarli al tuo team.",
+      "noSessionsTitle": "Ancora nessuna sessione",
+      "noSessionsDesc": "Prima crea e collega una sessione WhatsApp. Ogni flusso appartiene a una sessione.",
+      "forbiddenTitle": "Serve l’accesso da operatore",
+      "forbiddenDesc": "I flussi si possono vedere e modificare solo con una chiave API da operatore o amministratore.",
+      "loadErrorTitle": "Impossibile caricare i flussi"
+    },
+    "toasts": {
+      "saved": "Flusso salvato",
+      "saveFailed": "Flusso non salvato",
+      "deleted": "Flusso eliminato",
+      "deleteFailed": "Flusso non eliminato"
+    },
+    "editor": {
+      "back": "Tutti i flussi",
+      "timeout": "Ricomincia dopo (minuti)",
+      "enabled": "Attivo",
+      "save": "Salva",
+      "unsaved": "Modifiche non salvate",
+      "problemsTitle": "Correggi prima di salvare:",
+      "addStep": "Aggiungi un passaggio",
+      "discardTitle": "Annullare le modifiche?",
+      "discardConfirm": "Le modifiche a questo flusso non sono state salvate.",
+      "keepEditing": "Continua a modificare",
+      "discard": "Annulla modifiche"
+    },
+    "types": {
+      "trigger": {
+        "title": "Inizio",
+        "description": "Quando parte il flusso."
+      },
+      "message": {
+        "title": "Messaggio",
+        "description": "Invia un testo, anche con delle scelte."
+      },
+      "collect": {
+        "title": "Fai una domanda",
+        "description": "Attendi una risposta e salvala."
+      },
+      "condition": {
+        "title": "Condizione",
+        "description": "Dirama in base agli orari o a parole chiave."
+      },
+      "handoff": {
+        "title": "Passa a una persona",
+        "description": "Metti in pausa il bot perché risponda una persona."
+      }
+    },
+    "outputs": {
+      "next": "Poi",
+      "yes": "Sì",
+      "no": "No"
+    },
+    "summary": {
+      "anyMessage": "Qualsiasi messaggio",
+      "keywords": "Parole chiave: {{keywords}}",
+      "hours": "Aperto {{start}}–{{end}}",
+      "empty": "Non ancora configurato",
+      "ends": "Termina il flusso"
+    },
+    "inspector": {
+      "title": "Impostazioni del passaggio",
+      "nothingSelected": "Seleziona un passaggio per modificarlo.",
+      "howTo": "Trascina dal punto laterale di un passaggio a un altro per collegarli. Premi Canc per eliminare il passaggio o il collegamento selezionato.",
+      "variablesHint": "Variabili:",
+      "startWhen": "Inizia quando",
+      "matchAny": "arriva un messaggio qualsiasi (se la chat non è in un flusso)",
+      "matchKeywords": "un messaggio contiene una parola chiave",
+      "keywords": "Parole chiave",
+      "keywordsPlaceholder": "ciao, salve, menu",
+      "triggerKeywordsHint": "Separa le parole con virgole. Una parola chiave fa anche ripartire il flusso per una chat che è già al suo interno (al massimo ogni 5 minuti).",
+      "messageText": "Messaggio",
+      "choices": "Scelte",
+      "choicesHint": "Con delle scelte il flusso attende una risposta. Il cliente può scrivere il numero, l’etichetta o una parola chiave. Senza scelte il flusso prosegue subito.",
+      "choiceLabel": "Etichetta della scelta {{n}}",
+      "choiceKeywords": "Parole chiave della scelta {{n}}",
+      "choiceKeywordsPlaceholder": "Altre parole per questa scelta (facoltativo)",
+      "removeChoice": "Rimuovi la scelta {{n}}",
+      "addChoice": "Aggiungi scelta",
+      "useButtons": "Mostra le scelte come pulsanti",
+      "useButtonsHint": "Richiede il motore Baileys e al massimo {{max}} scelte. L’elenco numerato è sempre incluso, così il messaggio funziona anche dove i pulsanti non compaiono.",
+      "tooManyButtons": "I pulsanti consentono al massimo {{max}} scelte.",
+      "buttonLabelTooLong": "L’etichetta di un pulsante può avere al massimo {{max}} caratteri.",
+      "invalidText": "Risposta se nessuna scelta corrisponde",
+      "invalidTextPlaceholder": "Scegli una delle opzioni, per favore.",
+      "question": "Domanda",
+      "variable": "Salva la risposta come",
+      "variableHint": "Usa {{name}} nei passaggi successivi per inserire la risposta.",
+      "checkWhat": "Controlla",
+      "kindHours": "Orari di apertura",
+      "kindKeywords": "Parole chiave nel messaggio",
+      "conditionKeywordsHint": "Sì quando il messaggio arrivato a questo passaggio contiene una di queste parole.",
+      "timezone": "Fuso orario",
+      "days": "Aperto il",
+      "opens": "Apre",
+      "closes": "Chiude",
+      "hoursHint": "Sì entro questi orari. Una chiusura prima dell’apertura va oltre la mezzanotte.",
+      "handoffText": "Messaggio al cliente",
+      "silentFor": "Il bot tace per (minuti)",
+      "silentForHint": "Fino ad allora il bot non risponde in questa chat, così può rispondere il tuo team.",
+      "notifyChat": "Avvisa questo numero (facoltativo)",
+      "notifyChatHint": "Un numero con prefisso internazionale, o un id di gruppo che termina con @g.us.",
+      "notifyText": "Testo dell’avviso",
+      "deleteStep": "Elimina passaggio"
+    },
+    "defaults": {
+      "name": "Nuovo flusso",
+      "message": "Ciao! Come possiamo aiutarti?",
+      "collect": "Scrivi la tua domanda, per favore.",
+      "handoff": "Grazie! Un membro del nostro team ti risponderà presto.",
+      "notify": "Nuovo passaggio da {{phone}}",
+      "choice": "Opzione {{n}}"
+    }
   },
   "apiKeys": {
     "title": "Chiavi API",

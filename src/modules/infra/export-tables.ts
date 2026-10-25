@@ -335,6 +335,8 @@ export const EXPORT_TABLES: AnyExportTable[] = [
   // rule with it — exporting and re-inserting it is not optional, or a restore silently destroys
   // every autoreply rule.
   defineExportTable({ key: 'automationRules', table: 'automation_rules', optional: true, sessionFk: true }),
+  // automation_flows cascades from sessions the same way, so it is exported for the same reason.
+  defineExportTable({ key: 'automationFlows', table: 'automation_flows', optional: true, sessionFk: true }),
 ];
 
 /**
@@ -347,4 +349,7 @@ export const EXPORT_TABLES: AnyExportTable[] = [
 export const EXPORT_TABLE_EXCLUSIONS: Readonly<Record<string, string>> = {
   // Claims expire within 24 hours; a restored key would only block or replay a send it never saw.
   send_idempotency_keys: 'short-lived Idempotency-Key claims (24 h TTL), meaningless after a restore',
+  // Where each chat is in a flow. A restore that brought back a half-finished menu would answer
+  // questions the customer saw before the backup; every chat starts its flow fresh instead.
+  automation_flow_states: 'per-chat flow progress and handoffs, restarted fresh rather than resumed after a restore',
 };

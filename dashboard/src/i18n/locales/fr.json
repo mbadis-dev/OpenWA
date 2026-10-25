@@ -67,6 +67,7 @@
     "numberChecker": "Vérificateur de numéros",
     "webhooks": "Webhooks",
     "templates": "Templates",
+    "flows": "Parcours",
     "apiKeys": "Clés API",
     "messageTester": "Testeur de messages",
     "infrastructure": "Infrastructure",
@@ -765,6 +766,135 @@
       "copied": "Nom du template copié"
     },
     "sessionSelect": "Session"
+  },
+  "flows": {
+    "title": "Parcours",
+    "subtitle": "Créez des conversations de réponse automatique en plusieurs étapes pour chaque session WhatsApp",
+    "intro": "Un parcours répond avant les règles de réponse unique. Tant qu’une discussion est dans un parcours ou confiée à une personne, les règles se taisent dans cette discussion.",
+    "sessionSelect": "Session",
+    "noSessions": "Aucune session",
+    "newFlow": "Nouveau parcours",
+    "edit": "Modifier",
+    "stepCount": "Étapes : {{count}}",
+    "timeoutShort": "Recommence après {{minutes}} min de silence",
+    "deleteFlow": "Supprimer {{name}}",
+    "deleteTitle": "Supprimer le parcours",
+    "deleteConfirm": "Supprimer « {{name}} » ? Les discussions en cours s’arrêtent là où elles sont.",
+    "empty": {
+      "title": "Aucun parcours",
+      "description": "Créez un parcours pour accueillir vos clients, afficher un menu, recueillir leurs informations ou les confier à votre équipe.",
+      "noSessionsTitle": "Aucune session",
+      "noSessionsDesc": "Créez et associez d’abord une session WhatsApp. Un parcours appartient à une session.",
+      "forbiddenTitle": "Accès opérateur requis",
+      "forbiddenDesc": "Les parcours ne peuvent être consultés et modifiés qu’avec une clé API opérateur ou administrateur.",
+      "loadErrorTitle": "Impossible de charger les parcours"
+    },
+    "toasts": {
+      "saved": "Parcours enregistré",
+      "saveFailed": "Parcours non enregistré",
+      "deleted": "Parcours supprimé",
+      "deleteFailed": "Parcours non supprimé"
+    },
+    "editor": {
+      "back": "Tous les parcours",
+      "timeout": "Recommencer après (minutes)",
+      "enabled": "Actif",
+      "save": "Enregistrer",
+      "unsaved": "Modifications non enregistrées",
+      "problemsTitle": "Corrigez ceci avant d’enregistrer :",
+      "addStep": "Ajouter une étape",
+      "discardTitle": "Abandonner les modifications ?",
+      "discardConfirm": "Vos modifications de ce parcours ne sont pas enregistrées.",
+      "keepEditing": "Continuer",
+      "discard": "Abandonner"
+    },
+    "types": {
+      "trigger": {
+        "title": "Départ",
+        "description": "Quand le parcours commence."
+      },
+      "message": {
+        "title": "Message",
+        "description": "Envoyer un texte, avec des choix si besoin."
+      },
+      "collect": {
+        "title": "Poser une question",
+        "description": "Attendre une réponse et l’enregistrer."
+      },
+      "condition": {
+        "title": "Condition",
+        "description": "Brancher selon les horaires ou des mots-clés."
+      },
+      "handoff": {
+        "title": "Transférer",
+        "description": "Mettre le bot en pause pour qu’une personne réponde."
+      }
+    },
+    "outputs": {
+      "next": "Ensuite",
+      "yes": "Oui",
+      "no": "Non"
+    },
+    "summary": {
+      "anyMessage": "Tout message",
+      "keywords": "Mots-clés : {{keywords}}",
+      "hours": "Ouvert {{start}}–{{end}}",
+      "empty": "Pas encore configuré",
+      "ends": "Termine le parcours"
+    },
+    "inspector": {
+      "title": "Réglages de l’étape",
+      "nothingSelected": "Sélectionnez une étape pour la modifier.",
+      "howTo": "Faites glisser le point latéral d’une étape vers une autre pour les relier. Appuyez sur Suppr pour retirer l’étape ou le lien sélectionné.",
+      "variablesHint": "Variables :",
+      "startWhen": "Commencer quand",
+      "matchAny": "un message arrive (si la discussion n’est pas dans un parcours)",
+      "matchKeywords": "un message contient un mot-clé",
+      "keywords": "Mots-clés",
+      "keywordsPlaceholder": "bonjour, salut, menu",
+      "triggerKeywordsHint": "Séparez les mots-clés par des virgules. Un mot-clé relance aussi le parcours pour une discussion qui y est déjà (au plus toutes les 5 minutes).",
+      "messageText": "Message",
+      "choices": "Choix",
+      "choicesHint": "Avec des choix, le parcours attend une réponse. Le client peut taper le numéro, le libellé ou un mot-clé. Sans choix, le parcours continue aussitôt.",
+      "choiceLabel": "Libellé du choix {{n}}",
+      "choiceKeywords": "Mots-clés du choix {{n}}",
+      "choiceKeywordsPlaceholder": "Autres mots pour ce choix (facultatif)",
+      "removeChoice": "Retirer le choix {{n}}",
+      "addChoice": "Ajouter un choix",
+      "useButtons": "Afficher les choix en boutons",
+      "useButtonsHint": "Nécessite le moteur Baileys et au plus {{max}} choix. La liste numérotée est toujours envoyée, le message reste donc utilisable sans boutons.",
+      "tooManyButtons": "Les boutons acceptent au plus {{max}} choix.",
+      "buttonLabelTooLong": "Un libellé de bouton fait au plus {{max}} caractères.",
+      "invalidText": "Réponse si aucun choix ne correspond",
+      "invalidTextPlaceholder": "Merci de choisir une des options.",
+      "question": "Question",
+      "variable": "Enregistrer la réponse sous",
+      "variableHint": "Utilisez {{name}} dans les étapes suivantes pour insérer la réponse.",
+      "checkWhat": "Vérifier",
+      "kindHours": "Horaires d’ouverture",
+      "kindKeywords": "Mots-clés du message",
+      "conditionKeywordsHint": "Oui si le message arrivé à cette étape contient un de ces mots-clés.",
+      "timezone": "Fuseau horaire",
+      "days": "Ouvert le",
+      "opens": "Ouvre",
+      "closes": "Ferme",
+      "hoursHint": "Oui pendant ces horaires. Une fermeture avant l’ouverture passe minuit.",
+      "handoffText": "Message au client",
+      "silentFor": "Le bot se tait pendant (minutes)",
+      "silentForHint": "Jusque-là le bot ne répond pas dans cette discussion, pour laisser répondre votre équipe.",
+      "notifyChat": "Prévenir ce numéro (facultatif)",
+      "notifyChatHint": "Un numéro avec indicatif pays, ou un identifiant de groupe se terminant par @g.us.",
+      "notifyText": "Texte de la notification",
+      "deleteStep": "Supprimer l’étape"
+    },
+    "defaults": {
+      "name": "Nouveau parcours",
+      "message": "Bonjour ! Comment pouvons-nous vous aider ?",
+      "collect": "Merci d’écrire votre question.",
+      "handoff": "Merci ! Un membre de notre équipe va vous répondre.",
+      "notify": "Nouveau transfert de {{phone}}",
+      "choice": "Option {{n}}"
+    }
   },
   "apiKeys": {
     "title": "Clés API",

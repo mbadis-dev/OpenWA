@@ -19,6 +19,7 @@ import { IntegrationDeliveryFailure } from '../integration/entities/integration-
 import { StatusUpdate } from '../status-store/entities/status-update.entity';
 import { SendIdempotencyKey } from '../message/entities/send-idempotency-key.entity';
 import { AutomationRule } from '../automation/entities/automation-rule.entity';
+import { AutomationFlow } from '../automation/entities/automation-flow.entity';
 import { EngineRegistry } from '../../engine/engine-registry.service';
 import type { IWhatsAppEngine } from '../../engine/interfaces/whatsapp-engine.interface';
 import { HookManager } from '../../core/hooks';
@@ -147,6 +148,7 @@ describe('import-data and the writes of the sessions it removes', () => {
         IntegrationDeliveryFailure,
         StatusUpdate,
         AutomationRule,
+        AutomationFlow,
         SendIdempotencyKey,
       ],
       synchronize: true,

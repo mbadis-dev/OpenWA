@@ -65,6 +65,7 @@
     "numberChecker": "号码检查",
     "webhooks": "Webhooks",
     "templates": "模板",
+    "flows": "流程",
     "apiKeys": "API 密钥",
     "messageTester": "消息测试器",
     "infrastructure": "基础设施",
@@ -759,6 +760,135 @@
       "copied": "已复制模板名称"
     },
     "sessionSelect": "会话"
+  },
+  "flows": {
+    "title": "流程",
+    "subtitle": "为每个 WhatsApp 会话创建多步骤自动回复对话",
+    "intro": "流程会先于单条消息自动回复规则作答。聊天处于流程中或已转交人工时，规则在该聊天中不会回复。",
+    "sessionSelect": "会话",
+    "noSessions": "没有会话",
+    "newFlow": "新建流程",
+    "edit": "编辑",
+    "stepCount": "步骤：{{count}}",
+    "timeoutShort": "静默 {{minutes}} 分钟后重新开始",
+    "deleteFlow": "删除 {{name}}",
+    "deleteTitle": "删除流程",
+    "deleteConfirm": "删除“{{name}}”？其中的聊天会停在当前位置。",
+    "empty": {
+      "title": "还没有流程",
+      "description": "创建流程来问候客户、展示菜单、收集信息或转交给你的团队。",
+      "noSessionsTitle": "还没有会话",
+      "noSessionsDesc": "请先创建并连接一个 WhatsApp 会话。流程属于某个会话。",
+      "forbiddenTitle": "需要操作员权限",
+      "forbiddenDesc": "只有操作员或管理员 API 密钥才能查看和编辑流程。",
+      "loadErrorTitle": "无法加载流程"
+    },
+    "toasts": {
+      "saved": "流程已保存",
+      "saveFailed": "流程未保存",
+      "deleted": "流程已删除",
+      "deleteFailed": "流程未删除"
+    },
+    "editor": {
+      "back": "全部流程",
+      "timeout": "多久后重新开始（分钟）",
+      "enabled": "启用",
+      "save": "保存",
+      "unsaved": "有未保存的更改",
+      "problemsTitle": "保存前请修正以下问题：",
+      "addStep": "添加步骤",
+      "discardTitle": "放弃更改？",
+      "discardConfirm": "你对此流程的更改尚未保存。",
+      "keepEditing": "继续编辑",
+      "discard": "放弃"
+    },
+    "types": {
+      "trigger": {
+        "title": "开始",
+        "description": "流程何时开始。"
+      },
+      "message": {
+        "title": "消息",
+        "description": "发送文本，可附带选项。"
+      },
+      "collect": {
+        "title": "提问",
+        "description": "等待回复并保存。"
+      },
+      "condition": {
+        "title": "条件",
+        "description": "按营业时间或关键词分支。"
+      },
+      "handoff": {
+        "title": "转交人工",
+        "description": "暂停机器人，让人工回复。"
+      }
+    },
+    "outputs": {
+      "next": "然后",
+      "yes": "是",
+      "no": "否"
+    },
+    "summary": {
+      "anyMessage": "任意消息",
+      "keywords": "关键词：{{keywords}}",
+      "hours": "营业 {{start}}–{{end}}",
+      "empty": "尚未设置",
+      "ends": "结束流程"
+    },
+    "inspector": {
+      "title": "步骤设置",
+      "nothingSelected": "选择一个步骤进行编辑。",
+      "howTo": "从步骤侧面的圆点拖到另一个步骤即可连接。按 Delete 删除所选步骤或连接。",
+      "variablesHint": "变量：",
+      "startWhen": "开始条件",
+      "matchAny": "收到任意消息（聊天不在流程中时）",
+      "matchKeywords": "消息包含关键词",
+      "keywords": "关键词",
+      "keywordsPlaceholder": "你好, 菜单",
+      "triggerKeywordsHint": "用逗号分隔关键词。关键词也会让已在流程中的聊天重新开始（最多每 5 分钟一次）。",
+      "messageText": "消息",
+      "choices": "选项",
+      "choicesHint": "有选项时，流程会等待回复。客户可以输入序号、选项文字或关键词。没有选项时，流程会直接继续。",
+      "choiceLabel": "选项 {{n}} 文字",
+      "choiceKeywords": "选项 {{n}} 关键词",
+      "choiceKeywordsPlaceholder": "该选项的其他说法（可选）",
+      "removeChoice": "移除选项 {{n}}",
+      "addChoice": "添加选项",
+      "useButtons": "以按钮显示选项",
+      "useButtonsHint": "需要 Baileys 引擎，最多 {{max}} 个选项。编号列表始终会一起发送，即使按钮不显示，消息也能使用。",
+      "tooManyButtons": "按钮最多 {{max}} 个选项。",
+      "buttonLabelTooLong": "按钮文字最多 {{max}} 个字符。",
+      "invalidText": "没有匹配选项时的回复",
+      "invalidTextPlaceholder": "请选择其中一个选项。",
+      "question": "问题",
+      "variable": "答案保存为",
+      "variableHint": "在后续步骤中使用 {{name}} 插入答案。",
+      "checkWhat": "检查",
+      "kindHours": "营业时间",
+      "kindKeywords": "消息中的关键词",
+      "conditionKeywordsHint": "到达此步骤的消息包含其中任一关键词时为“是”。",
+      "timezone": "时区",
+      "days": "营业日",
+      "opens": "开始",
+      "closes": "结束",
+      "hoursHint": "在此时间内为“是”。结束时间早于开始时间时跨越午夜。",
+      "handoffText": "发给客户的消息",
+      "silentFor": "机器人静默时长（分钟）",
+      "silentForHint": "在此之前机器人不会回复此聊天，方便团队回复。",
+      "notifyChat": "通知此号码（可选）",
+      "notifyChatHint": "带国家代码的电话号码，或以 @g.us 结尾的群组 ID。",
+      "notifyText": "通知内容",
+      "deleteStep": "删除步骤"
+    },
+    "defaults": {
+      "name": "新流程",
+      "message": "你好！有什么可以帮你？",
+      "collect": "请输入你的问题。",
+      "handoff": "谢谢！我们的团队成员会尽快回复你。",
+      "notify": "来自 {{phone}} 的新转交",
+      "choice": "选项 {{n}}"
+    }
   },
   "apiKeys": {
     "title": "API 密钥",

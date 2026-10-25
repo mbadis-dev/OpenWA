@@ -65,6 +65,7 @@
     "numberChecker": "Number Checker",
     "webhooks": "Webhooks",
     "templates": "Templates",
+    "flows": "Flows",
     "apiKeys": "API Keys",
     "messageTester": "Message Tester",
     "infrastructure": "Infrastructure",
@@ -759,6 +760,135 @@
       "copied": "Template name copied"
     },
     "sessionSelect": "Session"
+  },
+  "flows": {
+    "title": "Flows",
+    "subtitle": "Build multi-step auto-reply conversations for each WhatsApp session",
+    "intro": "A flow answers before the single-message auto-reply rules. While a chat is inside a flow, or handed to a person, the rules stay quiet in that chat.",
+    "sessionSelect": "Session",
+    "noSessions": "No sessions",
+    "newFlow": "New flow",
+    "edit": "Edit",
+    "stepCount": "Steps: {{count}}",
+    "timeoutShort": "Starts over after {{minutes}} min of silence",
+    "deleteFlow": "Delete {{name}}",
+    "deleteTitle": "Delete flow",
+    "deleteConfirm": "Delete \"{{name}}\"? Chats that are inside it stop where they are.",
+    "empty": {
+      "title": "No flows yet",
+      "description": "Create a flow to greet customers, show a menu, collect their details or hand them to your team.",
+      "noSessionsTitle": "No sessions yet",
+      "noSessionsDesc": "Create and link a WhatsApp session first. Flows belong to a session.",
+      "forbiddenTitle": "Operator access needed",
+      "forbiddenDesc": "Flows can be viewed and edited only with an operator or admin API key.",
+      "loadErrorTitle": "Could not load flows"
+    },
+    "toasts": {
+      "saved": "Flow saved",
+      "saveFailed": "Flow not saved",
+      "deleted": "Flow deleted",
+      "deleteFailed": "Flow not deleted"
+    },
+    "editor": {
+      "back": "All flows",
+      "timeout": "Restart after (minutes)",
+      "enabled": "Active",
+      "save": "Save",
+      "unsaved": "Unsaved changes",
+      "problemsTitle": "Fix these before saving:",
+      "addStep": "Add a step",
+      "discardTitle": "Discard changes?",
+      "discardConfirm": "Your changes to this flow have not been saved.",
+      "keepEditing": "Keep editing",
+      "discard": "Discard"
+    },
+    "types": {
+      "trigger": {
+        "title": "Start",
+        "description": "When the flow begins."
+      },
+      "message": {
+        "title": "Message",
+        "description": "Send text, optionally with choices."
+      },
+      "collect": {
+        "title": "Ask a question",
+        "description": "Wait for any reply and save it."
+      },
+      "condition": {
+        "title": "Condition",
+        "description": "Branch on opening hours or keywords."
+      },
+      "handoff": {
+        "title": "Hand off",
+        "description": "Pause the bot so a person can reply."
+      }
+    },
+    "outputs": {
+      "next": "Then",
+      "yes": "Yes",
+      "no": "No"
+    },
+    "summary": {
+      "anyMessage": "Any message",
+      "keywords": "Keywords: {{keywords}}",
+      "hours": "Open {{start}}–{{end}}",
+      "empty": "Not set up yet",
+      "ends": "Ends the flow"
+    },
+    "inspector": {
+      "title": "Step settings",
+      "nothingSelected": "Select a step to edit it.",
+      "howTo": "Drag from a step's right-hand dot to another step to connect them. Press Delete to remove the selected step or connection.",
+      "variablesHint": "Variables:",
+      "startWhen": "Start when",
+      "matchAny": "Any message arrives (when the chat is not in a flow)",
+      "matchKeywords": "A message contains a keyword",
+      "keywords": "Keywords",
+      "keywordsPlaceholder": "hi, hello, menu",
+      "triggerKeywordsHint": "Separate keywords with commas. A keyword also restarts the flow for a chat that is already in it (at most once every 5 minutes).",
+      "messageText": "Message",
+      "choices": "Choices",
+      "choicesHint": "With choices the flow waits for a reply. Customers can type the number, the label or one of its keywords. Without choices the flow moves straight on.",
+      "choiceLabel": "Choice {{n}} label",
+      "choiceKeywords": "Choice {{n}} keywords",
+      "choiceKeywordsPlaceholder": "Other words for this choice (optional)",
+      "removeChoice": "Remove choice {{n}}",
+      "addChoice": "Add choice",
+      "useButtons": "Show choices as buttons",
+      "useButtonsHint": "Needs the Baileys engine and at most {{max}} choices. The numbered list is always included, so the message still works where buttons do not show.",
+      "tooManyButtons": "Buttons allow at most {{max}} choices.",
+      "buttonLabelTooLong": "Button labels can be at most {{max}} characters.",
+      "invalidText": "Reply when no choice matches",
+      "invalidTextPlaceholder": "Please choose one of the options.",
+      "question": "Question",
+      "variable": "Save the answer as",
+      "variableHint": "Use {{name}} in later steps to insert the answer.",
+      "checkWhat": "Check",
+      "kindHours": "Opening hours",
+      "kindKeywords": "Keywords in the message",
+      "conditionKeywordsHint": "Yes when the message that reached this step contains one of these keywords.",
+      "timezone": "Time zone",
+      "days": "Open on",
+      "opens": "Opens",
+      "closes": "Closes",
+      "hoursHint": "Yes inside these hours. A closing time before the opening time runs past midnight.",
+      "handoffText": "Message to the customer",
+      "silentFor": "Bot stays silent for (minutes)",
+      "silentForHint": "The bot does not answer this chat until then, so your team can reply.",
+      "notifyChat": "Notify this number (optional)",
+      "notifyChatHint": "A phone number with country code, or a group id ending in @g.us.",
+      "notifyText": "Notification message",
+      "deleteStep": "Delete step"
+    },
+    "defaults": {
+      "name": "New flow",
+      "message": "Hello! How can we help you?",
+      "collect": "Please type your question.",
+      "handoff": "Thanks! A member of our team will reply soon.",
+      "notify": "New handoff from {{phone}}",
+      "choice": "Option {{n}}"
+    }
   },
   "apiKeys": {
     "title": "API Keys",

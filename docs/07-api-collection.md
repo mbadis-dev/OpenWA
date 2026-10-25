@@ -1478,7 +1478,8 @@ curl -X POST "$BASE/api/infra/import-data" \
       "webhooks": [], "messages": [], "messageBatches": [], "templates": [], "baileysStoredMessages": [],
       "lidMappings": [], "chatStates": [], "pluginInstances": [], "conversationMappings": [], "ingressEvents": [],
       "webhookDeliveryFailures": [], "webhookOutboxEvents": [], "integrationDeliveryFailures": [], "statusUpdates": [],
-      "automationRules": []
+      "automationRules": [],
+      "automationFlows": []
     }
   }'
 ```

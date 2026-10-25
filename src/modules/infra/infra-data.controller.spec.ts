@@ -40,6 +40,7 @@ import { IntegrationDeliveryFailure } from '../integration/entities/integration-
 import { StatusUpdate } from '../status-store/entities/status-update.entity';
 import { SendIdempotencyKey } from '../message/entities/send-idempotency-key.entity';
 import { AutomationRule } from '../automation/entities/automation-rule.entity';
+import { AutomationFlow } from '../automation/entities/automation-flow.entity';
 import { AuditAction } from '../audit/entities/audit-log.entity';
 import { ScopeBindingService } from '../integration/scope-binding.service';
 import { PluginInstanceService } from '../integration/plugin-instance.service';
@@ -81,6 +82,7 @@ describe('InfraDataController.importData round-trips export-data (no silent mess
         IntegrationDeliveryFailure,
         StatusUpdate,
         AutomationRule,
+        AutomationFlow,
         SendIdempotencyKey,
       ],
       synchronize: true,
@@ -1579,6 +1581,7 @@ describe('InfraDataController.import/export preserves every data-DB table', () =
         IntegrationDeliveryFailure,
         StatusUpdate,
         AutomationRule,
+        AutomationFlow,
       ],
       synchronize: true,
     });
@@ -2033,6 +2036,7 @@ describe('InfraDataController audit trail — import emits only on a committed r
         IntegrationDeliveryFailure,
         StatusUpdate,
         AutomationRule,
+        AutomationFlow,
       ],
       synchronize: true,
     });
@@ -2331,6 +2335,7 @@ describe('InfraDataController.importData status_updates + runtime reconciliation
         IntegrationDeliveryFailure,
         StatusUpdate,
         AutomationRule,
+        AutomationFlow,
       ],
       synchronize: true,
     });
@@ -2559,6 +2564,70 @@ describe('InfraDataController.importData status_updates + runtime reconciliation
     expect(restored.cooldownSeconds).toBe(120);
     expect(restored.enabled).toBe(true);
     expect(restored.conditions).toEqual({ conditions: [{ field: 'body', operator: 'contains', value: 'hello' }] });
+  });
+
+  const flowDefinition = {
+    nodes: [
+      { id: 'start', type: 'trigger', position: { x: 0, y: 0 }, data: { match: 'any', keywords: [] } },
+      {
+        id: 'hi',
+        type: 'message',
+        position: { x: 0, y: 100 },
+        data: { text: 'Hello', choices: [], useButtons: false, invalidText: '' },
+      },
+    ],
+    edges: [{ id: 'e1', source: 'start', sourceHandle: 'next', target: 'hi' }],
+  } as AutomationFlow['definition'];
+
+  const seedFlow = async () => {
+    const flowRepo = ds.getRepository(AutomationFlow);
+    await flowRepo.save(
+      flowRepo.create({
+        id: 'flow-1',
+        sessionId: 's1',
+        name: 'Welcome',
+        definition: flowDefinition,
+        timeoutMinutes: 30,
+      }),
+    );
+    return flowRepo;
+  };
+
+  it('exports and restores automation_flows, which the session wipe would otherwise cascade away', async () => {
+    await seedSession('s1');
+    const flowRepo = await seedFlow();
+
+    const controller = build();
+    const dump = await controller.exportData();
+    expect(dump.counts.automationFlows).toBe(1);
+
+    const res = await controller.importData({ tables: dump.tables });
+
+    expect(res.imported).toBe(true);
+    expect(res.counts.automationFlows).toBe(1);
+    const restored = await flowRepo.findOneByOrFail({ id: 'flow-1' });
+    expect(restored.definition).toEqual(flowDefinition);
+    expect(restored.timeoutMinutes).toBe(30);
+  });
+
+  // The import bypasses the flow DTOs; a graph the engine could never run is refused, and like every
+  // refused row it rolls the whole restore back, keeping the data that was there.
+  it('refuses a restore carrying a flow whose graph is invalid, naming it', async () => {
+    await seedSession('s1');
+    const flowRepo = await seedFlow();
+    const controller = build();
+    const dump = await controller.exportData();
+    const broken = { ...dump.tables.automationFlows[0], id: 'flow-2', definition: '{"nodes":[],"edges":[]}' };
+
+    const res = await controller.importData({
+      tables: { ...dump.tables, automationFlows: [...dump.tables.automationFlows, broken] },
+    });
+
+    expect(res.imported).toBe(false);
+    expect(res.warnings).toEqual([
+      'Skipped automation flow flow-2: invalid definition (A flow needs exactly one start step)',
+    ]);
+    expect(await flowRepo.existsBy({ id: 'flow-1' })).toBe(true);
   });
 
   it('exports and restores status_updates (the table the docs promise is covered)', async () => {
@@ -3102,6 +3171,7 @@ describe('InfraDataController.importData re-syncs plugin instance bindings', () 
         IntegrationDeliveryFailure,
         StatusUpdate,
         AutomationRule,
+        AutomationFlow,
       ],
       synchronize: true,
     });

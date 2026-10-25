@@ -1,6 +1,7 @@
 import { NulFreeTransformer } from '../../common/transformers/nul-free.transformer';
 import { isSafeSessionName } from '../../common/utils/path-safety';
 import { collectFilterErrors } from '../webhook/filters/filter-validation';
+import { validateFlowDefinition } from '../automation/flows/flow-definition';
 import type {
   MigrationTables,
   SessionRow,
@@ -19,6 +20,7 @@ import type {
   IntegrationDeliveryFailureRow,
   StatusUpdateRow,
   AutomationRuleRow,
+  AutomationFlowRow,
 } from './migration-tables.types';
 
 // A per-table restore step for importData: which backup key to read, the exact INSERT text (kept in
@@ -552,6 +554,31 @@ export const TABLE_IMPORTERS: AnyTableImporter[] = [
       rule.updatedAt,
     ],
   }),
+  // Import automation flows (FK sessions ON DELETE CASCADE, re-inserted for the same reason as rules).
+  defineTableImporter({
+    key: 'automationFlows',
+    label: 'automation flow',
+    sql: `INSERT INTO automation_flows (id, "sessionId", name, enabled, definition, "timeoutMinutes", "createdAt", "updatedAt")
+               VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`,
+    id: (flow: AutomationFlowRow) => flow.id,
+    // This path bypasses the flow DTOs. The engine skips an invalid graph at runtime anyway, but a row
+    // that would never run is vetoed here with the reason, like a malformed rule.
+    skip: (flow: AutomationFlowRow) => {
+      const problems = validateFlowDefinition(decodeJsonColumn(flow.definition));
+      if (problems.length === 0) return null;
+      return `Skipped automation flow ${flow.id}: invalid definition (${problems[0]})`;
+    },
+    map: (flow: AutomationFlowRow) => [
+      flow.id,
+      flow.sessionId,
+      nulFree(flow.name),
+      flow.enabled ?? true,
+      typeof flow.definition === 'string' ? flow.definition : JSON.stringify(flow.definition),
+      flow.timeoutMinutes ?? 60,
+      flow.createdAt,
+      flow.updatedAt,
+    ],
+  }),
 ];
 
 // The `as TableCounts` cast in importData means a dropped or mis-keyed descriptor is invisible to
@@ -574,6 +601,7 @@ const EXPECTED_TABLE_KEYS: ReadonlyArray<keyof MigrationTables> = [
   'integrationDeliveryFailures',
   'statusUpdates',
   'automationRules',
+  'automationFlows',
 ];
 const importerKeys = TABLE_IMPORTERS.map(importer => importer.key);
 for (const key of EXPECTED_TABLE_KEYS) {

@@ -4,6 +4,7 @@
 import { warnIfInsecureHttpUrl } from '../utils/urlSecurity';
 import { isKeyUnusable } from '../utils/authLifecycle';
 import { fetchAllPages } from '../utils/fetchAllPages';
+import type { AutomationFlow, AutomationFlowPayload } from '../types/flows';
 
 // Resolve the API base URL. By default this is the same-origin relative path '/api',
 // correct when the dashboard and API are served from the same origin (the default
@@ -822,9 +823,12 @@ async function handleErrorResponse<T>(response: Response, sentKey: string | null
   const err = new Error(error.message || `HTTP ${response.status}`) as Error & {
     status?: number;
     code?: string;
+    details?: string[];
   };
   err.status = response.status;
   if (typeof error.code === 'string') err.code = error.code;
+  // A validation 400 lists one problem per entry; the message above joins them, this keeps them apart.
+  if (Array.isArray(error.message)) err.details = error.message.map(String);
   throw err;
 }
 
@@ -1137,6 +1141,26 @@ export const templateApi = {
     }),
   delete: (sessionId: string, id: string) =>
     request<void>(`/sessions/${sessionId}/templates/${id}`, { method: 'DELETE' }),
+};
+
+// =============================================================================
+// Automation flow API
+// =============================================================================
+
+export const flowApi = {
+  list: (sessionId: string) => request<AutomationFlow[]>(`/sessions/${sessionId}/automation-flows`),
+  create: (sessionId: string, data: AutomationFlowPayload) =>
+    request<AutomationFlow>(`/sessions/${sessionId}/automation-flows`, {
+      method: 'POST',
+      body: JSON.stringify(data),
+    }),
+  update: (sessionId: string, id: string, data: Partial<AutomationFlowPayload>) =>
+    request<AutomationFlow>(`/sessions/${sessionId}/automation-flows/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(data),
+    }),
+  delete: (sessionId: string, id: string) =>
+    request<void>(`/sessions/${sessionId}/automation-flows/${id}`, { method: 'DELETE' }),
 };
 
 // =============================================================================

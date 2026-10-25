@@ -4231,6 +4231,418 @@
         ]
       }
     },
+    "/api/sessions/{sessionId}/automation-flows": {
+      "post": {
+        "operationId": "AutomationFlowController_create",
+        "parameters": [
+          {
+            "name": "sessionId",
+            "required": true,
+            "in": "path",
+            "description": "Session ID",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateAutomationFlowDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Flow created.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AutomationFlowResponseDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid flow (the message lists every problem in the graph), or the per-session limit is reached.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "The API key is missing, unknown, revoked, or expired",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "The API key's role, session or chat scope, or IP allow-list does not allow this operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No session with this id.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Create an autoreply flow",
+        "tags": [
+          "automation"
+        ]
+      },
+      "get": {
+        "operationId": "AutomationFlowController_findAll",
+        "parameters": [
+          {
+            "name": "sessionId",
+            "required": true,
+            "in": "path",
+            "description": "Session ID",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Flows in evaluation order: creation time, id as the same-second tiebreak.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/AutomationFlowResponseDto"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "The API key is missing, unknown, revoked, or expired",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "The API key's role, session or chat scope, or IP allow-list does not allow this operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "summary": "List the session’s autoreply flows",
+        "tags": [
+          "automation"
+        ]
+      }
+    },
+    "/api/sessions/{sessionId}/automation-flows/{flowId}": {
+      "get": {
+        "operationId": "AutomationFlowController_findOne",
+        "parameters": [
+          {
+            "name": "sessionId",
+            "required": true,
+            "in": "path",
+            "description": "Session ID",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "flowId",
+            "required": true,
+            "in": "path",
+            "description": "Flow ID",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The flow.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AutomationFlowResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "The API key is missing, unknown, revoked, or expired",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "The API key's role, session or chat scope, or IP allow-list does not allow this operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No such flow in this session.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Get one autoreply flow",
+        "tags": [
+          "automation"
+        ]
+      },
+      "put": {
+        "operationId": "AutomationFlowController_update",
+        "parameters": [
+          {
+            "name": "sessionId",
+            "required": true,
+            "in": "path",
+            "description": "Session ID",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "flowId",
+            "required": true,
+            "in": "path",
+            "description": "Flow ID",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateAutomationFlowDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Updated flow.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AutomationFlowResponseDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid flow (the message lists every problem in the graph).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "The API key is missing, unknown, revoked, or expired",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "The API key's role, session or chat scope, or IP allow-list does not allow this operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No such flow in this session.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Update an autoreply flow",
+        "tags": [
+          "automation"
+        ]
+      },
+      "delete": {
+        "operationId": "AutomationFlowController_remove",
+        "parameters": [
+          {
+            "name": "sessionId",
+            "required": true,
+            "in": "path",
+            "description": "Session ID",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "flowId",
+            "required": true,
+            "in": "path",
+            "description": "Flow ID",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Flow deleted."
+          },
+          "401": {
+            "description": "The API key is missing, unknown, revoked, or expired",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "The API key's role, session or chat scope, or IP allow-list does not allow this operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No such flow in this session.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Delete an autoreply flow",
+        "tags": [
+          "automation"
+        ]
+      }
+    },
+    "/api/sessions/{sessionId}/automation-flows/chats/{chatId}": {
+      "delete": {
+        "description": "Forgets where the chat is in the session’s flows and ends a handoff, so the bot answers its next message as a new conversation. Succeeds when there is nothing to reset.",
+        "operationId": "AutomationFlowController_resetChat",
+        "parameters": [
+          {
+            "name": "sessionId",
+            "required": true,
+            "in": "path",
+            "description": "Session ID",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "chatId",
+            "required": true,
+            "in": "path",
+            "description": "Chat ID, e.g. 628123456789@c.us",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Progress reset."
+          },
+          "401": {
+            "description": "The API key is missing, unknown, revoked, or expired",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "The API key's role, session or chat scope, or IP allow-list does not allow this operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Reset a chat’s flow progress",
+        "tags": [
+          "automation"
+        ]
+      }
+    },
     "/api/sessions/{sessionId}/messages": {
       "get": {
         "operationId": "MessageController_getMessages",
@@ -20159,6 +20571,107 @@
           }
         }
       },
+      "CreateAutomationFlowDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Display name for the flow",
+            "example": "Welcome menu",
+            "maxLength": 100
+          },
+          "definition": {
+            "type": "object",
+            "description": "The flow graph: `{ nodes, edges }` in the React Flow shape. Node types are `trigger` (exactly one), `message`, `collect`, `handoff` and `condition`; see docs/06 for each type’s settings and outputs. The whole graph is checked on save and refused with the list of problems.",
+            "additionalProperties": true
+          },
+          "timeoutMinutes": {
+            "type": "number",
+            "description": "Minutes a chat may stay silent mid-flow; after that its next message starts the flow over instead of answering the old question. Default 60.",
+            "default": 60,
+            "minimum": 1,
+            "maximum": 10080
+          },
+          "enabled": {
+            "type": "boolean",
+            "description": "Whether the flow is active",
+            "default": true
+          }
+        },
+        "required": [
+          "name",
+          "definition"
+        ]
+      },
+      "AutomationFlowResponseDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "sessionId": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "enabled": {
+            "type": "boolean"
+          },
+          "definition": {
+            "type": "object",
+            "description": "The flow graph: `{ nodes, edges }` in the React Flow shape. Node types are `trigger` (exactly one), `message`, `collect`, `handoff` and `condition`; see docs/06 for each type’s settings and outputs. The whole graph is checked on save and refused with the list of problems.",
+            "additionalProperties": true
+          },
+          "timeoutMinutes": {
+            "type": "number",
+            "description": "Minutes a chat may stay silent mid-flow; after that its next message starts the flow over instead of answering the old question. Default 60."
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "updatedAt": {
+            "format": "date-time",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "sessionId",
+          "name",
+          "enabled",
+          "definition",
+          "timeoutMinutes",
+          "createdAt",
+          "updatedAt"
+        ]
+      },
+      "UpdateAutomationFlowDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Display name for the flow",
+            "maxLength": 100
+          },
+          "definition": {
+            "type": "object",
+            "description": "The flow graph: `{ nodes, edges }` in the React Flow shape. Node types are `trigger` (exactly one), `message`, `collect`, `handoff` and `condition`; see docs/06 for each type’s settings and outputs. The whole graph is checked on save and refused with the list of problems.",
+            "additionalProperties": true
+          },
+          "timeoutMinutes": {
+            "type": "number",
+            "description": "Minutes a chat may stay silent mid-flow; after that its next message starts the flow over instead of answering the old question. Default 60.",
+            "minimum": 1,
+            "maximum": 10080
+          },
+          "enabled": {
+            "type": "boolean",
+            "description": "Whether the flow is active"
+          }
+        }
+      },
       "MessageListItemDto": {
         "type": "object",
         "properties": {
@@ -23031,6 +23544,12 @@
             "items": {
               "type": "object"
             }
+          },
+          "automationFlows": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
           }
         },
         "required": [
@@ -23049,7 +23568,8 @@
           "webhookOutboxEvents",
           "integrationDeliveryFailures",
           "statusUpdates",
-          "automationRules"
+          "automationRules",
+          "automationFlows"
         ]
       },
       "TableCountsDto": {
@@ -23118,6 +23638,10 @@
           "automationRules": {
             "type": "number",
             "example": 2
+          },
+          "automationFlows": {
+            "type": "number",
+            "example": 1
           }
         },
         "required": [
@@ -23136,7 +23660,8 @@
           "webhookOutboxEvents",
           "integrationDeliveryFailures",
           "statusUpdates",
-          "automationRules"
+          "automationRules",
+          "automationFlows"
         ]
       },
       "OmittedInlineMediaDto": {
@@ -23213,7 +23738,7 @@
         "properties": {
           "tables": {
             "type": "object",
-            "description": "Every one of the 16 migration tables is emptied before the restore runs, so a key omitted here is restored EMPTY rather than left untouched. Post the whole GET /api/infra/export-data payload, not a hand-built subset.",
+            "description": "Every one of the 17 migration tables is emptied before the restore runs, so a key omitted here is restored EMPTY rather than left untouched. Post the whole GET /api/infra/export-data payload, not a hand-built subset.",
             "properties": {
               "sessions": {
                 "type": "array"
@@ -23261,6 +23786,9 @@
                 "type": "array"
               },
               "automationRules": {
+                "type": "array"
+              },
+              "automationFlows": {
                 "type": "array"
               }
             }

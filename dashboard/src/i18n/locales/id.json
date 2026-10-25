@@ -65,6 +65,7 @@
     "numberChecker": "Pemeriksa Nomor",
     "webhooks": "Webhook",
     "templates": "Templat",
+    "flows": "Alur",
     "apiKeys": "Kunci API",
     "messageTester": "Penguji Pesan",
     "infrastructure": "Infrastruktur",
@@ -759,6 +760,135 @@
       "copied": "Nama templat disalin"
     },
     "sessionSelect": "Sesi"
+  },
+  "flows": {
+    "title": "Alur",
+    "subtitle": "Buat percakapan balasan otomatis bertahap untuk setiap sesi WhatsApp",
+    "intro": "Alur menjawab sebelum aturan balasan otomatis satu pesan. Selama chat berada di dalam alur atau diserahkan ke orang, aturan tidak membalas di chat itu.",
+    "sessionSelect": "Sesi",
+    "noSessions": "Tidak ada sesi",
+    "newFlow": "Alur baru",
+    "edit": "Ubah",
+    "stepCount": "Langkah: {{count}}",
+    "timeoutShort": "Mulai ulang setelah {{minutes}} menit tanpa balasan",
+    "deleteFlow": "Hapus {{name}}",
+    "deleteTitle": "Hapus alur",
+    "deleteConfirm": "Hapus \"{{name}}\"? Chat yang sedang di dalamnya berhenti di tempatnya.",
+    "empty": {
+      "title": "Belum ada alur",
+      "description": "Buat alur untuk menyapa pelanggan, menampilkan menu, mengumpulkan data, atau menyerahkannya ke tim Anda.",
+      "noSessionsTitle": "Belum ada sesi",
+      "noSessionsDesc": "Buat dan tautkan sesi WhatsApp terlebih dahulu. Setiap alur milik satu sesi.",
+      "forbiddenTitle": "Perlu akses operator",
+      "forbiddenDesc": "Alur hanya dapat dilihat dan diubah dengan kunci API operator atau admin.",
+      "loadErrorTitle": "Alur tidak dapat dimuat"
+    },
+    "toasts": {
+      "saved": "Alur disimpan",
+      "saveFailed": "Alur tidak disimpan",
+      "deleted": "Alur dihapus",
+      "deleteFailed": "Alur tidak dihapus"
+    },
+    "editor": {
+      "back": "Semua alur",
+      "timeout": "Mulai ulang setelah (menit)",
+      "enabled": "Aktif",
+      "save": "Simpan",
+      "unsaved": "Perubahan belum disimpan",
+      "problemsTitle": "Perbaiki ini sebelum menyimpan:",
+      "addStep": "Tambah langkah",
+      "discardTitle": "Buang perubahan?",
+      "discardConfirm": "Perubahan Anda pada alur ini belum disimpan.",
+      "keepEditing": "Lanjut mengubah",
+      "discard": "Buang"
+    },
+    "types": {
+      "trigger": {
+        "title": "Mulai",
+        "description": "Kapan alur dimulai."
+      },
+      "message": {
+        "title": "Pesan",
+        "description": "Kirim teks, bisa dengan pilihan."
+      },
+      "collect": {
+        "title": "Ajukan pertanyaan",
+        "description": "Tunggu balasan lalu simpan."
+      },
+      "condition": {
+        "title": "Kondisi",
+        "description": "Bercabang menurut jam buka atau kata kunci."
+      },
+      "handoff": {
+        "title": "Serahkan",
+        "description": "Jeda bot agar orang yang membalas."
+      }
+    },
+    "outputs": {
+      "next": "Lalu",
+      "yes": "Ya",
+      "no": "Tidak"
+    },
+    "summary": {
+      "anyMessage": "Pesan apa pun",
+      "keywords": "Kata kunci: {{keywords}}",
+      "hours": "Buka {{start}}–{{end}}",
+      "empty": "Belum diatur",
+      "ends": "Mengakhiri alur"
+    },
+    "inspector": {
+      "title": "Pengaturan langkah",
+      "nothingSelected": "Pilih langkah untuk mengubahnya.",
+      "howTo": "Seret dari titik di sisi sebuah langkah ke langkah lain untuk menghubungkannya. Tekan Delete untuk menghapus langkah atau sambungan yang dipilih.",
+      "variablesHint": "Variabel:",
+      "startWhen": "Mulai saat",
+      "matchAny": "ada pesan masuk (jika chat tidak sedang di alur)",
+      "matchKeywords": "pesan berisi kata kunci",
+      "keywords": "Kata kunci",
+      "keywordsPlaceholder": "halo, hai, menu",
+      "triggerKeywordsHint": "Pisahkan dengan koma. Kata kunci juga memulai ulang alur untuk chat yang sudah ada di dalamnya (paling sering setiap 5 menit).",
+      "messageText": "Pesan",
+      "choices": "Pilihan",
+      "choicesHint": "Dengan pilihan, alur menunggu balasan. Pelanggan dapat mengetik nomor, label, atau kata kuncinya. Tanpa pilihan, alur langsung lanjut.",
+      "choiceLabel": "Label pilihan {{n}}",
+      "choiceKeywords": "Kata kunci pilihan {{n}}",
+      "choiceKeywordsPlaceholder": "Kata lain untuk pilihan ini (opsional)",
+      "removeChoice": "Hapus pilihan {{n}}",
+      "addChoice": "Tambah pilihan",
+      "useButtons": "Tampilkan pilihan sebagai tombol",
+      "useButtonsHint": "Memerlukan engine Baileys dan paling banyak {{max}} pilihan. Daftar bernomor selalu disertakan, jadi pesan tetap berfungsi jika tombol tidak tampil.",
+      "tooManyButtons": "Tombol hanya memuat paling banyak {{max}} pilihan.",
+      "buttonLabelTooLong": "Label tombol paling banyak {{max}} karakter.",
+      "invalidText": "Balasan jika tidak ada pilihan yang cocok",
+      "invalidTextPlaceholder": "Silakan pilih salah satu opsi.",
+      "question": "Pertanyaan",
+      "variable": "Simpan jawaban sebagai",
+      "variableHint": "Gunakan {{name}} di langkah berikutnya untuk menyisipkan jawaban.",
+      "checkWhat": "Periksa",
+      "kindHours": "Jam buka",
+      "kindKeywords": "Kata kunci di pesan",
+      "conditionKeywordsHint": "Ya jika pesan yang sampai di langkah ini berisi salah satu kata kunci ini.",
+      "timezone": "Zona waktu",
+      "days": "Buka pada",
+      "opens": "Buka",
+      "closes": "Tutup",
+      "hoursHint": "Ya di dalam jam ini. Jam tutup sebelum jam buka berarti melewati tengah malam.",
+      "handoffText": "Pesan ke pelanggan",
+      "silentFor": "Bot diam selama (menit)",
+      "silentForHint": "Sampai saat itu bot tidak membalas chat ini agar tim Anda bisa membalas.",
+      "notifyChat": "Beri tahu nomor ini (opsional)",
+      "notifyChatHint": "Nomor telepon dengan kode negara, atau id grup yang diakhiri @g.us.",
+      "notifyText": "Pesan pemberitahuan",
+      "deleteStep": "Hapus langkah"
+    },
+    "defaults": {
+      "name": "Alur baru",
+      "message": "Halo! Ada yang bisa kami bantu?",
+      "collect": "Silakan tulis pertanyaan Anda.",
+      "handoff": "Terima kasih! Anggota tim kami akan segera membalas.",
+      "notify": "Penyerahan baru dari {{phone}}",
+      "choice": "Pilihan {{n}}"
+    }
   },
   "apiKeys": {
     "title": "Kunci API",

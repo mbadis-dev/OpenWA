@@ -71,7 +71,8 @@
     "infrastructure": "Infraestrutura",
     "plugins": "Plugins",
     "logs": "Registros",
-    "templates": "Modelos"
+    "templates": "Modelos",
+    "flows": "Fluxos"
   },
   "chats": {
     "edited": "Editado",
@@ -1010,6 +1011,135 @@
       "copied": "Nome do modelo copiado"
     },
     "sessionSelect": "Sessão"
+  },
+  "flows": {
+    "title": "Fluxos",
+    "subtitle": "Crie conversas de resposta automática em várias etapas para cada sessão do WhatsApp",
+    "intro": "Um fluxo responde antes das regras de resposta única. Enquanto um chat está em um fluxo ou com uma pessoa, as regras ficam em silêncio nesse chat.",
+    "sessionSelect": "Sessão",
+    "noSessions": "Nenhuma sessão",
+    "newFlow": "Novo fluxo",
+    "edit": "Editar",
+    "stepCount": "Etapas: {{count}}",
+    "timeoutShort": "Recomeça após {{minutes}} min sem resposta",
+    "deleteFlow": "Excluir {{name}}",
+    "deleteTitle": "Excluir fluxo",
+    "deleteConfirm": "Excluir \"{{name}}\"? Os chats dentro dele param onde estão.",
+    "empty": {
+      "title": "Nenhum fluxo ainda",
+      "description": "Crie um fluxo para receber clientes, mostrar um menu, coletar dados ou passá-los para sua equipe.",
+      "noSessionsTitle": "Nenhuma sessão ainda",
+      "noSessionsDesc": "Primeiro crie e conecte uma sessão do WhatsApp. Cada fluxo pertence a uma sessão.",
+      "forbiddenTitle": "Acesso de operador necessário",
+      "forbiddenDesc": "Fluxos só podem ser vistos e editados com uma chave de API de operador ou administrador.",
+      "loadErrorTitle": "Não foi possível carregar os fluxos"
+    },
+    "toasts": {
+      "saved": "Fluxo salvo",
+      "saveFailed": "Fluxo não salvo",
+      "deleted": "Fluxo excluído",
+      "deleteFailed": "Fluxo não excluído"
+    },
+    "editor": {
+      "back": "Todos os fluxos",
+      "timeout": "Recomeçar após (minutos)",
+      "enabled": "Ativo",
+      "save": "Salvar",
+      "unsaved": "Alterações não salvas",
+      "problemsTitle": "Corrija antes de salvar:",
+      "addStep": "Adicionar etapa",
+      "discardTitle": "Descartar alterações?",
+      "discardConfirm": "Suas alterações neste fluxo não foram salvas.",
+      "keepEditing": "Continuar editando",
+      "discard": "Descartar"
+    },
+    "types": {
+      "trigger": {
+        "title": "Início",
+        "description": "Quando o fluxo começa."
+      },
+      "message": {
+        "title": "Mensagem",
+        "description": "Enviar texto, com opções se quiser."
+      },
+      "collect": {
+        "title": "Fazer uma pergunta",
+        "description": "Aguardar uma resposta e salvá-la."
+      },
+      "condition": {
+        "title": "Condição",
+        "description": "Ramificar por horário ou palavras-chave."
+      },
+      "handoff": {
+        "title": "Passar para uma pessoa",
+        "description": "Pausar o bot para uma pessoa responder."
+      }
+    },
+    "outputs": {
+      "next": "Depois",
+      "yes": "Sim",
+      "no": "Não"
+    },
+    "summary": {
+      "anyMessage": "Qualquer mensagem",
+      "keywords": "Palavras-chave: {{keywords}}",
+      "hours": "Aberto {{start}}–{{end}}",
+      "empty": "Ainda não configurado",
+      "ends": "Encerra o fluxo"
+    },
+    "inspector": {
+      "title": "Configurações da etapa",
+      "nothingSelected": "Selecione uma etapa para editá-la.",
+      "howTo": "Arraste do ponto lateral de uma etapa até outra para conectá-las. Pressione Delete para remover a etapa ou a conexão selecionada.",
+      "variablesHint": "Variáveis:",
+      "startWhen": "Começar quando",
+      "matchAny": "chegar qualquer mensagem (se o chat não estiver em um fluxo)",
+      "matchKeywords": "uma mensagem tiver uma palavra-chave",
+      "keywords": "Palavras-chave",
+      "keywordsPlaceholder": "oi, olá, menu",
+      "triggerKeywordsHint": "Separe com vírgulas. Uma palavra-chave também reinicia o fluxo para um chat que já está nele (no máximo a cada 5 minutos).",
+      "messageText": "Mensagem",
+      "choices": "Opções",
+      "choicesHint": "Com opções, o fluxo espera uma resposta. O cliente pode digitar o número, o texto ou uma palavra-chave. Sem opções, o fluxo segue direto.",
+      "choiceLabel": "Texto da opção {{n}}",
+      "choiceKeywords": "Palavras-chave da opção {{n}}",
+      "choiceKeywordsPlaceholder": "Outras palavras para esta opção (opcional)",
+      "removeChoice": "Remover opção {{n}}",
+      "addChoice": "Adicionar opção",
+      "useButtons": "Mostrar opções como botões",
+      "useButtonsHint": "Requer o mecanismo Baileys e no máximo {{max}} opções. A lista numerada é sempre incluída, então a mensagem funciona mesmo sem os botões.",
+      "tooManyButtons": "Botões permitem no máximo {{max}} opções.",
+      "buttonLabelTooLong": "O texto do botão pode ter no máximo {{max}} caracteres.",
+      "invalidText": "Resposta quando nenhuma opção corresponde",
+      "invalidTextPlaceholder": "Escolha uma das opções, por favor.",
+      "question": "Pergunta",
+      "variable": "Salvar a resposta como",
+      "variableHint": "Use {{name}} nas próximas etapas para inserir a resposta.",
+      "checkWhat": "Verificar",
+      "kindHours": "Horário de funcionamento",
+      "kindKeywords": "Palavras-chave na mensagem",
+      "conditionKeywordsHint": "Sim quando a mensagem que chegou a esta etapa contém uma destas palavras.",
+      "timezone": "Fuso horário",
+      "days": "Aberto em",
+      "opens": "Abre",
+      "closes": "Fecha",
+      "hoursHint": "Sim dentro deste horário. Um fechamento antes da abertura passa da meia-noite.",
+      "handoffText": "Mensagem ao cliente",
+      "silentFor": "O bot fica em silêncio por (minutos)",
+      "silentForHint": "Até lá o bot não responde neste chat, para sua equipe responder.",
+      "notifyChat": "Avisar este número (opcional)",
+      "notifyChatHint": "Um telefone com código do país, ou um id de grupo terminado em @g.us.",
+      "notifyText": "Mensagem do aviso",
+      "deleteStep": "Excluir etapa"
+    },
+    "defaults": {
+      "name": "Novo fluxo",
+      "message": "Olá! Como podemos ajudar?",
+      "collect": "Digite sua pergunta, por favor.",
+      "handoff": "Obrigado! Alguém da nossa equipe vai responder em breve.",
+      "notify": "Nova transferência de {{phone}}",
+      "choice": "Opção {{n}}"
+    }
   },
   "numberChecker": {
     "subtitle": "Verifique de forma silenciosa se números de telefone têm contas ativas no WhatsApp, sem enviar mensagens",

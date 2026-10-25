@@ -65,6 +65,7 @@
     "numberChecker": "號碼檢查",
     "webhooks": "Webhooks",
     "templates": "範本",
+    "flows": "流程",
     "apiKeys": "API 金鑰",
     "messageTester": "訊息測試器",
     "infrastructure": "基礎架構",
@@ -759,6 +760,135 @@
       "copied": "已複製範本名稱"
     },
     "sessionSelect": "工作階段"
+  },
+  "flows": {
+    "title": "流程",
+    "subtitle": "為每個 WhatsApp 工作階段建立多步驟自動回覆對話",
+    "intro": "流程會先於單一訊息自動回覆規則作答。對話處於流程中或已轉交真人時，規則在該對話中不會回覆。",
+    "sessionSelect": "工作階段",
+    "noSessions": "沒有工作階段",
+    "newFlow": "新增流程",
+    "edit": "編輯",
+    "stepCount": "步驟：{{count}}",
+    "timeoutShort": "靜默 {{minutes}} 分鐘後重新開始",
+    "deleteFlow": "刪除 {{name}}",
+    "deleteTitle": "刪除流程",
+    "deleteConfirm": "刪除「{{name}}」？其中的對話會停在目前位置。",
+    "empty": {
+      "title": "尚未有流程",
+      "description": "建立流程來問候客戶、顯示選單、收集資料或轉交給你的團隊。",
+      "noSessionsTitle": "尚未有工作階段",
+      "noSessionsDesc": "請先建立並連結一個 WhatsApp 工作階段。流程屬於某個工作階段。",
+      "forbiddenTitle": "需要操作員權限",
+      "forbiddenDesc": "只有操作員或管理員 API 金鑰才能檢視和編輯流程。",
+      "loadErrorTitle": "無法載入流程"
+    },
+    "toasts": {
+      "saved": "流程已儲存",
+      "saveFailed": "流程未儲存",
+      "deleted": "流程已刪除",
+      "deleteFailed": "流程未刪除"
+    },
+    "editor": {
+      "back": "所有流程",
+      "timeout": "多久後重新開始（分鐘）",
+      "enabled": "啟用",
+      "save": "儲存",
+      "unsaved": "有未儲存的變更",
+      "problemsTitle": "儲存前請修正以下問題：",
+      "addStep": "新增步驟",
+      "discardTitle": "放棄變更？",
+      "discardConfirm": "你對此流程的變更尚未儲存。",
+      "keepEditing": "繼續編輯",
+      "discard": "放棄"
+    },
+    "types": {
+      "trigger": {
+        "title": "開始",
+        "description": "流程何時開始。"
+      },
+      "message": {
+        "title": "訊息",
+        "description": "傳送文字，可附帶選項。"
+      },
+      "collect": {
+        "title": "提問",
+        "description": "等待回覆並儲存。"
+      },
+      "condition": {
+        "title": "條件",
+        "description": "按營業時間或關鍵字分支。"
+      },
+      "handoff": {
+        "title": "轉交真人",
+        "description": "暫停機械人，讓真人回覆。"
+      }
+    },
+    "outputs": {
+      "next": "然後",
+      "yes": "是",
+      "no": "否"
+    },
+    "summary": {
+      "anyMessage": "任何訊息",
+      "keywords": "關鍵字：{{keywords}}",
+      "hours": "營業 {{start}}–{{end}}",
+      "empty": "尚未設定",
+      "ends": "結束流程"
+    },
+    "inspector": {
+      "title": "步驟設定",
+      "nothingSelected": "選擇一個步驟進行編輯。",
+      "howTo": "由步驟側面的圓點拖到另一個步驟即可連接。按 Delete 刪除所選步驟或連接。",
+      "variablesHint": "變數：",
+      "startWhen": "開始條件",
+      "matchAny": "收到任何訊息（對話不在流程中時）",
+      "matchKeywords": "訊息包含關鍵字",
+      "keywords": "關鍵字",
+      "keywordsPlaceholder": "你好, 選單",
+      "triggerKeywordsHint": "以逗號分隔關鍵字。關鍵字亦會令已在流程中的對話重新開始（最多每 5 分鐘一次）。",
+      "messageText": "訊息",
+      "choices": "選項",
+      "choicesHint": "有選項時，流程會等待回覆。客戶可輸入編號、選項文字或關鍵字。沒有選項時，流程會直接繼續。",
+      "choiceLabel": "選項 {{n}} 文字",
+      "choiceKeywords": "選項 {{n}} 關鍵字",
+      "choiceKeywordsPlaceholder": "此選項的其他說法（可選）",
+      "removeChoice": "移除選項 {{n}}",
+      "addChoice": "新增選項",
+      "useButtons": "以按鈕顯示選項",
+      "useButtonsHint": "需要 Baileys 引擎，最多 {{max}} 個選項。編號清單一定會一併傳送，即使按鈕不顯示，訊息亦可使用。",
+      "tooManyButtons": "按鈕最多 {{max}} 個選項。",
+      "buttonLabelTooLong": "按鈕文字最多 {{max}} 個字元。",
+      "invalidText": "沒有符合選項時的回覆",
+      "invalidTextPlaceholder": "請選擇其中一個選項。",
+      "question": "問題",
+      "variable": "答案儲存為",
+      "variableHint": "在之後的步驟使用 {{name}} 插入答案。",
+      "checkWhat": "檢查",
+      "kindHours": "營業時間",
+      "kindKeywords": "訊息中的關鍵字",
+      "conditionKeywordsHint": "到達此步驟的訊息包含其中任何關鍵字時為「是」。",
+      "timezone": "時區",
+      "days": "營業日",
+      "opens": "開始",
+      "closes": "結束",
+      "hoursHint": "在此時間內為「是」。結束時間早於開始時間時會跨越午夜。",
+      "handoffText": "傳給客戶的訊息",
+      "silentFor": "機械人靜默時長（分鐘）",
+      "silentForHint": "在此之前機械人不會回覆此對話，方便團隊回覆。",
+      "notifyChat": "通知此號碼（可選）",
+      "notifyChatHint": "連國家代碼的電話號碼，或以 @g.us 結尾的群組 ID。",
+      "notifyText": "通知內容",
+      "deleteStep": "刪除步驟"
+    },
+    "defaults": {
+      "name": "新流程",
+      "message": "你好！有甚麼可以幫你？",
+      "collect": "請輸入你的問題。",
+      "handoff": "謝謝！我們的團隊成員會盡快回覆你。",
+      "notify": "來自 {{phone}} 的新轉交",
+      "choice": "選項 {{n}}"
+    }
   },
   "apiKeys": {
     "title": "API 金鑰",

@@ -28,7 +28,7 @@
 
 ---
 
-> **About this fork.** This is a fork of [rmyndharis/OpenWA](https://github.com/rmyndharis/OpenWA). It adds one feature: a **buttons module** for sending messages with quick-reply buttons. Everything else matches upstream.
+> **About this fork.** This is a fork of [rmyndharis/OpenWA](https://github.com/rmyndharis/OpenWA). It adds two features: a **buttons module** for sending messages with quick-reply buttons, and a **flow builder** in the dashboard for multi-step auto-reply conversations. Everything else matches upstream.
 
 ## 🔘 Buttons module (this fork)
 
@@ -88,10 +88,40 @@ To use buttons, set `ENGINE_TYPE=baileys`.
 | whatsapp-web.js refusal | [`whatsapp-web-js.adapter.ts`](src/engine/adapters/whatsapp-web-js.adapter.ts)                                                                                     |
 | Tests                   | [`baileys-send-buttons.spec.ts`](src/engine/adapters/baileys-send-buttons.spec.ts), [`send-buttons.dto.spec.ts`](src/modules/message/dto/send-buttons.dto.spec.ts) |
 
-The published `ghcr.io/rmyndharis/openwa` image does not include this module. Build the image from this repository instead:
+## 🧭 Flow builder (this fork)
+
+The dashboard's **Flows** page is a visual editor for auto-reply conversations. You drag steps onto a canvas and connect them, and the gateway runs the result for every one-to-one chat of the session.
+
+| Step           | What it does                                                                                                          |
+| -------------- | --------------------------------------------------------------------------------------------------------------------- |
+| Start          | Begins the flow on any message, or only on messages containing chosen keywords.                                       |
+| Message        | Sends text. With choices, it waits for a reply and branches on it (number, label, keyword or tapped button).          |
+| Ask a question | Waits for any reply and saves it, for example a name or an inquiry. Later steps insert it with `{{name}}`.            |
+| Condition      | Branches on opening hours (time zone, days, hours) or on keywords in the message.                                     |
+| Hand off       | Tells the customer someone will reply, optionally notifies a staff number or group, and pauses the bot for that chat. |
+
+How it behaves:
+
+- Flows answer before the single-message auto-reply rules. While a chat is in a flow, or handed off, the rules stay quiet in that chat.
+- A message step with **Show choices as buttons** uses the buttons module above on the Baileys engine. On other engines it falls back to text. The numbered list of choices is always part of the text, so customers can reply by number either way.
+- Each chat's position in a flow is stored in the database, so a restart does not lose it. A chat that stays silent longer than the flow's timeout (60 minutes by default) starts over.
+- Loop protection: a flow does not restart in the same chat within 60 seconds, and an unrecognised reply is answered at most twice an hour.
+- Flows are included in the dashboard's data export and import.
+
+The API is `/api/sessions/:sessionId/automation-flows` (create, list, get, update, delete), plus `DELETE /api/sessions/:sessionId/automation-flows/chats/:chatId` to end a handoff early. The full reference is in [docs/06, section 6.4.16a](docs/06-api-specification.md).
+
+| Part             | Files                                                                                                                                                                                   |
+| ---------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Flow format      | [`flow-definition.ts`](src/modules/automation/flows/flow-definition.ts) (types and validation)                                                                                          |
+| Flow engine      | [`flow-runner.ts`](src/modules/automation/flows/flow-runner.ts) (pure logic) and [`automation-flows.service.ts`](src/modules/automation/automation-flows.service.ts) (state, sends)     |
+| API              | [`automation-flow.controller.ts`](src/modules/automation/automation-flow.controller.ts)                                                                                                 |
+| Tables           | [`1791500000000-AddAutomationFlows.ts`](src/database/migrations/1791500000000-AddAutomationFlows.ts)                                                                                    |
+| Dashboard editor | [`dashboard/src/pages/Flows.tsx`](dashboard/src/pages/Flows.tsx) and [`dashboard/src/pages/flows/`](dashboard/src/pages/flows/) (canvas built with [React Flow](https://reactflow.dev)) |
+
+The published `ghcr.io/rmyndharis/openwa` image includes neither module. Build the image from this repository instead:
 
 ```bash
-docker build -t openwa-buttons .
+docker build -t openwa-fork .
 ```
 
 ---

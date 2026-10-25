@@ -260,6 +260,21 @@ export interface AutomationRuleRow {
   updatedAt: string | Date;
 }
 
+/**
+ * automation_flows has the same ON DELETE CASCADE FK to sessions as automation_rules, and must be
+ * re-inserted for the same reason. `definition` is the flow graph's JSON, stored as text.
+ */
+export interface AutomationFlowRow {
+  id: string;
+  sessionId: string;
+  name: string;
+  enabled: boolean | number;
+  definition: string | object;
+  timeoutMinutes: number;
+  createdAt: string | Date;
+  updatedAt: string | Date;
+}
+
 export interface MigrationTables {
   sessions: SessionRow[];
   webhooks: WebhookRow[];
@@ -277,6 +292,7 @@ export interface MigrationTables {
   integrationDeliveryFailures: IntegrationDeliveryFailureRow[];
   statusUpdates: StatusUpdateRow[];
   automationRules: AutomationRuleRow[];
+  automationFlows: AutomationFlowRow[];
 }
 
 export type TableCounts = { [K in keyof MigrationTables]: number };

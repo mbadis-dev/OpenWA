@@ -5864,7 +5864,7 @@ Export every row of the 16 migration tables from the Data DB as JSON. Read-only,
 >
 > This bounds the media, not the export — a large enough text-only history still exceeds the import limit, because every row costs a few hundred bytes of scaffolding whatever was said. For a backup that keeps everything, use `scripts/backup.sh`: it snapshots the database file itself (and `pg_dump`s Postgres), so inline media rides along regardless of this budget.
 
-The migration set (`MigrationTables`) is, in payload-key order: `sessions`, `webhooks`, `messages`, `messageBatches`, `templates`, `baileysStoredMessages`, `lidMappings`, `chatStates`, `pluginInstances`, `conversationMappings`, `ingressEvents`, `webhookDeliveryFailures`, `webhookOutboxEvents`, `integrationDeliveryFailures`, `statusUpdates`, `automationRules`.
+The migration set (`MigrationTables`) is, in payload-key order: `sessions`, `webhooks`, `messages`, `messageBatches`, `templates`, `baileysStoredMessages`, `lidMappings`, `chatStates`, `pluginInstances`, `conversationMappings`, `ingressEvents`, `webhookDeliveryFailures`, `webhookOutboxEvents`, `integrationDeliveryFailures`, `statusUpdates`, `automationRules`, `automationFlows`.
 
 **Response** `200`
 
@@ -5903,7 +5903,8 @@ The migration set (`MigrationTables`) is, in payload-key order: `sessions`, `web
     "webhookOutboxEvents": [],
     "integrationDeliveryFailures": [],
     "statusUpdates": [],
-    "automationRules": []
+    "automationRules": [],
+    "automationFlows": []
   },
   "counts": {
     "sessions": 1,
@@ -5921,7 +5922,8 @@ The migration set (`MigrationTables`) is, in payload-key order: `sessions`, `web
     "webhookOutboxEvents": 0,
     "integrationDeliveryFailures": 0,
     "statusUpdates": 0,
-    "automationRules": 0
+    "automationRules": 0,
+    "automationFlows": 0
   },
   "skippedTables": [],
   "omittedInlineMedia": { "messages": 0, "messageBatches": 0 }
@@ -5991,7 +5993,8 @@ Replace all Data DB rows with the supplied export. **Destructive and transaction
     "webhookOutboxEvents": [],
     "integrationDeliveryFailures": [],
     "statusUpdates": [],
-    "automationRules": []
+    "automationRules": [],
+    "automationFlows": []
   },
   "stopOrphans": true
 }
@@ -6018,7 +6021,8 @@ Replace all Data DB rows with the supplied export. **Destructive and transaction
     "webhookOutboxEvents": 0,
     "integrationDeliveryFailures": 0,
     "statusUpdates": 0,
-    "automationRules": 0
+    "automationRules": 0,
+    "automationFlows": 0
   },
   "warnings": [],
   "notices": [],
@@ -6943,6 +6947,90 @@ Partial update (any subset of the create fields). **Auth:** API key (OPERATOR) �
 #### DELETE /api/sessions/:sessionId/automation-rules/:ruleId
 
 Delete a rule. **Auth:** API key (OPERATOR) · **Response** `204`.
+
+### 6.4.16a Automation flows (multi-step autoreply)
+
+Multi-step autoreply conversations, managed under `/api/sessions/:sessionId/automation-flows`
+(`AutomationFlowController`) and drawn in the dashboard's **Flows** page. Every route requires an API
+key with **OPERATOR** role or higher.
+
+A flow is a graph of steps in the React Flow shape: `definition: { nodes, edges }`. Each node has an
+`id` (letters, digits, `_`, `-`, at most 64), a `type`, a `position: { x, y }` and type-specific
+`data`. Each edge leaves one named output of a node (`sourceHandle`) and enters another node:
+
+| Type        | `data`                                                                                                              | Outputs                                      |
+| ----------- | ------------------------------------------------------------------------------------------------------------------- | -------------------------------------------- |
+| `trigger`   | `match` (`any` or `keywords`), `keywords[]`. Exactly one per flow.                                                  | `next`                                       |
+| `message`   | `text`, `choices[]` of `{ id, label, keywords[] }` (at most 10), `useButtons`, `invalidText`                        | one per choice id, or `next` with no choices |
+| `collect`   | `text`, `variable` (the reply is saved under this name)                                                             | `next`                                       |
+| `condition` | `kind` (`hours` or `keywords`), `keywords[]`, `timezone` (IANA), `days[]` (0 = Sunday), `start` and `end` (`HH:MM`) | `yes`, `no`                                  |
+| `handoff`   | `text`, `durationMinutes` (1–10080), `notifyChatId` (phone, `@c.us` or `@g.us`; empty for none), `notifyText`       | none: it ends the flow                       |
+
+An output with no edge ends the flow there. Texts may use `{{variable}}` for a collected answer and the
+built-ins `{{chatId}}` and `{{phone}}`. The whole graph is checked on save and refused with `400`
+listing every problem (`message` is an array of plain-language strings).
+
+**How flows run.** Flows answer before the automation rules (6.4.16), on inbound messages from
+one-to-one chats only, with the same freshness gate and the same `fromMe` guard. A chat inside a flow,
+or handed to a person, gets no rule reply. For each message, in order:
+
+1. During a handoff (`durationMinutes` after a `handoff` step) the bot stays silent in that chat.
+2. A message whose text matches the `keywords` of a flow's `keywords` trigger starts that flow, also
+   restarting a chat already inside a flow, at most once every 5 minutes.
+3. Otherwise a chat waiting at a step gets that step's answer: a `message` step matches the reply by
+   number, label, a choice keyword or a tapped button id, and repeats itself (after `invalidText`)
+   at most twice an hour when nothing matches; a `collect` step saves the reply (cut to 1024
+   characters).
+4. Otherwise the first enabled flow (creation order) whose trigger matches starts. A flow does not
+   start again in a chat within 60 seconds of its last start, which rate-bounds an exchange with
+   another bot.
+
+A chat silent for longer than the flow's `timeoutMinutes` (default 60) starts over instead of answering
+the old question. With `useButtons` and 1 to 3 choices a step is sent through `send-buttons`, falling
+back to text where the engine refuses buttons; the numbered list of choices is always part of the text.
+Where each chat is lives in the `automation_flow_states` table, so a restart does not lose it. Messages
+of one chat are handled one at a time within a process.
+
+#### POST /api/sessions/:sessionId/automation-flows
+
+Create a flow. **Auth:** API key (OPERATOR)
+
+**Request body**
+
+| Field          | Type    | Required | Description                                            |
+| -------------- | ------- | -------- | ------------------------------------------------------ |
+| name           | string  | yes      | Display name, max 100 characters.                      |
+| definition     | object  | yes      | `{ nodes, edges }` as described above.                 |
+| timeoutMinutes | number  | no       | Idle minutes before a chat starts over, 1–10080. `60`. |
+| enabled        | boolean | no       | Default `true`.                                        |
+
+**Response** `201` — the flow: `{ id, sessionId, name, enabled, definition, timeoutMinutes, createdAt, updatedAt }`.
+
+`400`: an invalid graph (the message lists every problem), an invalid field, or the session already
+holds `AUTOMATION_MAX_PER_SESSION` flows (the same cap as rules, counted separately). `404` when no
+session has this id.
+
+#### GET /api/sessions/:sessionId/automation-flows
+
+List the session's flows in evaluation order. **Auth:** API key (OPERATOR) · **Response** `200` — array of the shape above.
+
+#### GET /api/sessions/:sessionId/automation-flows/:flowId
+
+Get one flow. **Auth:** API key (OPERATOR) · `200` or `404` when the flow does not belong to the session.
+
+#### PUT /api/sessions/:sessionId/automation-flows/:flowId
+
+Partial update (any subset of the create fields; a new `definition` is checked again). **Auth:** API key (OPERATOR) · `200`, `400` for an invalid field or graph, or `404`.
+
+#### DELETE /api/sessions/:sessionId/automation-flows/:flowId
+
+Delete a flow. Chats inside it stop where they are. **Auth:** API key (OPERATOR) · **Response** `204`, or `404`.
+
+#### DELETE /api/sessions/:sessionId/automation-flows/chats/:chatId
+
+Reset one chat's flow progress: forgets where it is and ends a handoff, so the bot answers its next
+message as a new conversation. **Auth:** API key (OPERATOR) · **Response** `204`, also when there was
+nothing to reset.
 
 ### 6.4.17 Integration fabric (ingress & instances)
 

@@ -3,6 +3,7 @@ import {
   sessionApi,
   webhookApi,
   templateApi,
+  flowApi,
   apiKeyApi,
   auditApi,
   infraApi,
@@ -17,6 +18,7 @@ import {
   type CreateInstanceInput,
   type UpdateInstanceInput,
 } from '../services/api';
+import type { AutomationFlow, AutomationFlowPayload } from '../types/flows';
 
 // ── Query Keys ────────────────────────────────────────────────────────
 
@@ -27,6 +29,7 @@ export const queryKeys = {
   sessionChats: (sessionId: string) => ['sessions', sessionId, 'chats'] as const,
   webhooks: ['webhooks'] as const,
   templates: (sessionId: string) => ['sessions', sessionId, 'templates'] as const,
+  flows: (sessionId: string) => ['sessions', sessionId, 'automation-flows'] as const,
   apiKeys: ['apiKeys'] as const,
   logs: (params: { severity?: string; page: number; limit: number }) => ['logs', params] as const,
   infraStatus: ['infra', 'status'] as const,
@@ -176,6 +179,53 @@ export function useDeleteTemplateMutation() {
     mutationFn: (params: { sessionId: string; id: string }) => templateApi.delete(params.sessionId, params.id),
     onSuccess: (_template, params) => {
       void queryClient.invalidateQueries({ queryKey: queryKeys.templates(params.sessionId) });
+    },
+  });
+}
+
+// ── Automation Flow Queries ──────────────────────────────────────────
+
+export function useFlowsQuery(sessionId: string, enabled = true) {
+  return useQuery({
+    queryKey: queryKeys.flows(sessionId),
+    queryFn: () => flowApi.list(sessionId),
+    enabled: enabled && !!sessionId,
+    staleTime: 30_000,
+  });
+}
+
+export function useCreateFlowMutation() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (params: { sessionId: string; data: AutomationFlowPayload }) =>
+      flowApi.create(params.sessionId, params.data),
+    onSuccess: (_flow, params) => {
+      void queryClient.invalidateQueries({ queryKey: queryKeys.flows(params.sessionId) });
+    },
+  });
+}
+
+export function useUpdateFlowMutation() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (params: { sessionId: string; id: string; data: Partial<AutomationFlowPayload> }) =>
+      flowApi.update(params.sessionId, params.id, params.data),
+    onSuccess: (saved, params) => {
+      // Same reason as the template update: reopening the row before the refetch lands must load what was saved.
+      queryClient.setQueryData<AutomationFlow[]>(queryKeys.flows(params.sessionId), rows =>
+        rows?.map(row => (row.id === params.id ? saved : row)),
+      );
+      void queryClient.invalidateQueries({ queryKey: queryKeys.flows(params.sessionId) });
+    },
+  });
+}
+
+export function useDeleteFlowMutation() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (params: { sessionId: string; id: string }) => flowApi.delete(params.sessionId, params.id),
+    onSuccess: (_flow, params) => {
+      void queryClient.invalidateQueries({ queryKey: queryKeys.flows(params.sessionId) });
     },
   });
 }

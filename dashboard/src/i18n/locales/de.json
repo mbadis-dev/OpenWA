@@ -65,6 +65,7 @@
     "numberChecker": "Nummernprüfung",
     "webhooks": "Webhooks",
     "templates": "Vorlagen",
+    "flows": "Flows",
     "apiKeys": "API-Schlüssel",
     "messageTester": "Nachrichtentester",
     "infrastructure": "Infrastruktur",
@@ -759,6 +760,135 @@
       "copied": "Vorlagenname wurde kopiert"
     },
     "sessionSelect": "Sitzung"
+  },
+  "flows": {
+    "title": "Flows",
+    "subtitle": "Mehrstufige automatische Antworten für jede WhatsApp-Sitzung erstellen",
+    "intro": "Ein Flow antwortet vor den Einzelantwort-Regeln. Solange ein Chat in einem Flow ist oder an eine Person übergeben wurde, schweigen die Regeln in diesem Chat.",
+    "sessionSelect": "Sitzung",
+    "noSessions": "Keine Sitzungen",
+    "newFlow": "Neuer Flow",
+    "edit": "Bearbeiten",
+    "stepCount": "Schritte: {{count}}",
+    "timeoutShort": "Beginnt nach {{minutes}} Min. Stille neu",
+    "deleteFlow": "{{name}} löschen",
+    "deleteTitle": "Flow löschen",
+    "deleteConfirm": "„{{name}}“ löschen? Chats darin bleiben stehen, wo sie sind.",
+    "empty": {
+      "title": "Noch keine Flows",
+      "description": "Erstelle einen Flow, um Kunden zu begrüßen, ein Menü zu zeigen, Angaben zu sammeln oder an dein Team zu übergeben.",
+      "noSessionsTitle": "Noch keine Sitzungen",
+      "noSessionsDesc": "Erstelle und verknüpfe zuerst eine WhatsApp-Sitzung. Flows gehören zu einer Sitzung.",
+      "forbiddenTitle": "Operator-Zugriff nötig",
+      "forbiddenDesc": "Flows können nur mit einem API-Schlüssel mit Operator- oder Admin-Rolle angezeigt und bearbeitet werden.",
+      "loadErrorTitle": "Flows konnten nicht geladen werden"
+    },
+    "toasts": {
+      "saved": "Flow gespeichert",
+      "saveFailed": "Flow nicht gespeichert",
+      "deleted": "Flow gelöscht",
+      "deleteFailed": "Flow nicht gelöscht"
+    },
+    "editor": {
+      "back": "Alle Flows",
+      "timeout": "Neustart nach (Minuten)",
+      "enabled": "Aktiv",
+      "save": "Speichern",
+      "unsaved": "Ungespeicherte Änderungen",
+      "problemsTitle": "Vor dem Speichern beheben:",
+      "addStep": "Schritt hinzufügen",
+      "discardTitle": "Änderungen verwerfen?",
+      "discardConfirm": "Deine Änderungen an diesem Flow sind nicht gespeichert.",
+      "keepEditing": "Weiter bearbeiten",
+      "discard": "Verwerfen"
+    },
+    "types": {
+      "trigger": {
+        "title": "Start",
+        "description": "Wann der Flow beginnt."
+      },
+      "message": {
+        "title": "Nachricht",
+        "description": "Text senden, optional mit Auswahl."
+      },
+      "collect": {
+        "title": "Frage stellen",
+        "description": "Auf eine Antwort warten und speichern."
+      },
+      "condition": {
+        "title": "Bedingung",
+        "description": "Nach Öffnungszeiten oder Stichwörtern verzweigen."
+      },
+      "handoff": {
+        "title": "Übergeben",
+        "description": "Bot pausieren, damit eine Person antwortet."
+      }
+    },
+    "outputs": {
+      "next": "Dann",
+      "yes": "Ja",
+      "no": "Nein"
+    },
+    "summary": {
+      "anyMessage": "Jede Nachricht",
+      "keywords": "Stichwörter: {{keywords}}",
+      "hours": "Geöffnet {{start}}–{{end}}",
+      "empty": "Noch nicht eingerichtet",
+      "ends": "Beendet den Flow"
+    },
+    "inspector": {
+      "title": "Schritteinstellungen",
+      "nothingSelected": "Wähle einen Schritt zum Bearbeiten.",
+      "howTo": "Ziehe vom seitlichen Punkt eines Schritts zu einem anderen, um sie zu verbinden. Mit Entf löschst du den gewählten Schritt oder die Verbindung.",
+      "variablesHint": "Variablen:",
+      "startWhen": "Starten, wenn",
+      "matchAny": "eine Nachricht eintrifft (wenn der Chat in keinem Flow ist)",
+      "matchKeywords": "eine Nachricht ein Stichwort enthält",
+      "keywords": "Stichwörter",
+      "keywordsPlaceholder": "hallo, hi, menü",
+      "triggerKeywordsHint": "Stichwörter mit Kommas trennen. Ein Stichwort startet den Flow auch für einen Chat neu, der schon darin ist (höchstens alle 5 Minuten).",
+      "messageText": "Nachricht",
+      "choices": "Auswahl",
+      "choicesHint": "Mit Auswahl wartet der Flow auf eine Antwort. Kunden können die Nummer, die Beschriftung oder ein Stichwort tippen. Ohne Auswahl geht der Flow direkt weiter.",
+      "choiceLabel": "Beschriftung Auswahl {{n}}",
+      "choiceKeywords": "Stichwörter Auswahl {{n}}",
+      "choiceKeywordsPlaceholder": "Weitere Wörter für diese Auswahl (optional)",
+      "removeChoice": "Auswahl {{n}} entfernen",
+      "addChoice": "Auswahl hinzufügen",
+      "useButtons": "Auswahl als Buttons zeigen",
+      "useButtonsHint": "Braucht die Baileys-Engine und höchstens {{max}} Optionen. Die nummerierte Liste wird immer mitgeschickt, damit die Nachricht auch ohne Buttons funktioniert.",
+      "tooManyButtons": "Buttons erlauben höchstens {{max}} Optionen.",
+      "buttonLabelTooLong": "Button-Beschriftungen dürfen höchstens {{max}} Zeichen haben.",
+      "invalidText": "Antwort, wenn keine Auswahl passt",
+      "invalidTextPlaceholder": "Bitte wähle eine der Optionen.",
+      "question": "Frage",
+      "variable": "Antwort speichern als",
+      "variableHint": "Mit {{name}} fügst du die Antwort in späteren Schritten ein.",
+      "checkWhat": "Prüfen",
+      "kindHours": "Öffnungszeiten",
+      "kindKeywords": "Stichwörter in der Nachricht",
+      "conditionKeywordsHint": "Ja, wenn die Nachricht, die diesen Schritt erreicht hat, eines dieser Stichwörter enthält.",
+      "timezone": "Zeitzone",
+      "days": "Geöffnet an",
+      "opens": "Öffnet",
+      "closes": "Schließt",
+      "hoursHint": "Ja innerhalb dieser Zeiten. Liegt das Ende vor dem Beginn, geht es über Mitternacht.",
+      "handoffText": "Nachricht an den Kunden",
+      "silentFor": "Bot schweigt für (Minuten)",
+      "silentForHint": "Bis dahin antwortet der Bot nicht in diesem Chat, damit dein Team antworten kann.",
+      "notifyChat": "Diese Nummer benachrichtigen (optional)",
+      "notifyChatHint": "Eine Telefonnummer mit Ländervorwahl oder eine Gruppen-ID mit @g.us am Ende.",
+      "notifyText": "Benachrichtigungstext",
+      "deleteStep": "Schritt löschen"
+    },
+    "defaults": {
+      "name": "Neuer Flow",
+      "message": "Hallo! Wie können wir helfen?",
+      "collect": "Bitte schreib deine Frage.",
+      "handoff": "Danke! Jemand aus unserem Team antwortet bald.",
+      "notify": "Neue Übergabe von {{phone}}",
+      "choice": "Option {{n}}"
+    }
   },
   "apiKeys": {
     "title": "API-Schlüssel",

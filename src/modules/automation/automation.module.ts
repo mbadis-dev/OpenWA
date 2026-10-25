@@ -1,9 +1,13 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AutomationRule } from './entities/automation-rule.entity';
+import { AutomationFlow } from './entities/automation-flow.entity';
+import { AutomationFlowState } from './entities/automation-flow-state.entity';
 import { Session } from '../session/entities/session.entity';
 import { AutomationRulesService } from './automation-rules.service';
 import { AutomationRuleController } from './automation-rule.controller';
+import { AutomationFlowsService } from './automation-flows.service';
+import { AutomationFlowController } from './automation-flow.controller';
 
 /**
  * Deliberately imports no feature module: SessionModule imports this one (the projector fires rule
@@ -13,9 +17,9 @@ import { AutomationRuleController } from './automation-rule.controller';
  * while importing SessionModule would close that cycle.
  */
 @Module({
-  imports: [TypeOrmModule.forFeature([AutomationRule, Session], 'data')],
-  controllers: [AutomationRuleController],
-  providers: [AutomationRulesService],
-  exports: [AutomationRulesService],
+  imports: [TypeOrmModule.forFeature([AutomationRule, AutomationFlow, AutomationFlowState, Session], 'data')],
+  controllers: [AutomationRuleController, AutomationFlowController],
+  providers: [AutomationRulesService, AutomationFlowsService],
+  exports: [AutomationRulesService, AutomationFlowsService],
 })
 export class AutomationModule {}

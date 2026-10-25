@@ -186,7 +186,8 @@ curl -X POST 'http://localhost:2785/api/infra/import-data' \
     "webhookOutboxEvents": [...],
     "integrationDeliveryFailures": [...],
     "statusUpdates": [...],
-    "automationRules": [...]
+    "automationRules": [...],
+    "automationFlows": [...]
   },
   "counts": {
     "sessions": 5,
@@ -204,7 +205,8 @@ curl -X POST 'http://localhost:2785/api/infra/import-data' \
     "webhookOutboxEvents": 0,
     "integrationDeliveryFailures": 0,
     "statusUpdates": 19,
-    "automationRules": 7
+    "automationRules": 7,
+    "automationFlows": 1
   },
   "skippedTables": []
 }

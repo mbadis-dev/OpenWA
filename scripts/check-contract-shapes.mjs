@@ -1404,7 +1404,8 @@ export function unexposedResources(readme) {
 export function isUnexposedPath(path, unexposed) {
   const shape = path.replace(/\{[^}]*\}/g, '*');
   const resource = /^\/api\/sessions\/\*\/([^/]+)/.exec(shape)?.[1] ?? /^\/api\/([^/*]+)/.exec(shape)?.[1] ?? '';
-  if (unexposed.has(resource) || unexposed.has(resource.replace(/-rules$/, ''))) return true;
+  // `automation` covers both automation-rules and automation-flows.
+  if (unexposed.has(resource) || unexposed.has(resource.replace(/-(rules|flows)$/, ''))) return true;
   return [...unexposed].some(
     entry => entry.includes('/') && (shape === `/api/${entry}` || shape.startsWith(`/api/${entry}/`)),
   );
