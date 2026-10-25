@@ -12,7 +12,9 @@ import {
   MaxLength,
   IsIn,
   Validate,
+  ValidateNested,
 } from 'class-validator';
+import { Type } from 'class-transformer';
 import { ToStrictArray, ToStrictBoolean, ToStrictNumber, ToStrictString } from '../../../common/utils/strict-boolean';
 import {
   CHAT_ID_MAX_LENGTH,
@@ -38,6 +40,12 @@ export const LOCATION_TEXT_MAX_LENGTH = 1024;
 export const CONTACT_NAME_MAX_LENGTH = 255;
 export const CONTACT_NUMBER_MAX_LENGTH = 30;
 export const REACTION_EMOJI_MAX_LENGTH = 32;
+// WhatsApp shows at most three quick-reply buttons in a row, cuts labels past about 25 characters,
+// and caps an interactive body at 1024 and its header and footer at 60.
+export const BUTTONS_MAX = 3;
+export const BUTTON_TEXT_MAX_LENGTH = 25;
+export const BUTTONS_BODY_MAX_LENGTH = 1024;
+export const BUTTONS_HEADER_FOOTER_MAX_LENGTH = 60;
 
 export class SendLocationDto {
   @ApiProperty({ description: 'Chat ID (e.g. 628123456789@c.us)', maxLength: CHAT_ID_MAX_LENGTH })
@@ -158,6 +166,78 @@ export class SendPollDto {
   @IsString()
   @IsNotEmpty()
   quotedMessageId?: string;
+}
+
+export class ButtonChoiceDto {
+  @ApiProperty({
+    description: 'Id returned as `button.id` when the recipient taps this button',
+    maxLength: BUTTON_ID_MAX_LENGTH,
+    example: '1',
+  })
+  @ToStrictString()
+  @IsString()
+  @IsNotEmpty()
+  @MaxLength(BUTTON_ID_MAX_LENGTH)
+  id!: string;
+
+  @ApiProperty({
+    description: 'Visible label; a tap arrives as a message whose body is this label',
+    maxLength: BUTTON_TEXT_MAX_LENGTH,
+    example: 'Yes',
+  })
+  @ToStrictString()
+  @IsString()
+  @IsNotEmpty()
+  @MaxLength(BUTTON_TEXT_MAX_LENGTH)
+  text!: string;
+}
+
+export class SendButtonsDto {
+  @ApiProperty({ description: 'Chat ID (e.g. 628123456789@c.us or 1203630000@g.us)', maxLength: CHAT_ID_MAX_LENGTH })
+  @ToStrictString()
+  @IsString()
+  @IsNotEmpty()
+  @MaxLength(CHAT_ID_MAX_LENGTH)
+  chatId!: string;
+
+  @ApiProperty({
+    description: 'Message text shown above the buttons',
+    maxLength: BUTTONS_BODY_MAX_LENGTH,
+    example: 'Would you like to return to the main menu?',
+  })
+  @ToStrictString()
+  @IsString()
+  @IsNotEmpty()
+  @MaxLength(BUTTONS_BODY_MAX_LENGTH)
+  body!: string;
+
+  @ApiProperty({
+    description: `Quick-reply buttons, 1 to ${BUTTONS_MAX}`,
+    type: [ButtonChoiceDto],
+    minItems: 1,
+    maxItems: BUTTONS_MAX,
+  })
+  @ToStrictArray()
+  @IsArray()
+  @ArrayMinSize(1)
+  @ArrayMaxSize(BUTTONS_MAX)
+  @ValidateNested({ each: true })
+  @Type(() => ButtonChoiceDto)
+  buttons!: ButtonChoiceDto[];
+
+  @ApiPropertyOptional({ description: 'Bold line above the body', maxLength: BUTTONS_HEADER_FOOTER_MAX_LENGTH })
+  @IsOptional()
+  @ToStrictString()
+  @IsString()
+  @MaxLength(BUTTONS_HEADER_FOOTER_MAX_LENGTH)
+  header?: string;
+
+  @ApiPropertyOptional({ description: 'Small grey line below the body', maxLength: BUTTONS_HEADER_FOOTER_MAX_LENGTH })
+  @IsOptional()
+  @ToStrictString()
+  @IsString()
+  @MaxLength(BUTTONS_HEADER_FOOTER_MAX_LENGTH)
+  footer?: string;
 }
 
 export class ReplyMessageDto {

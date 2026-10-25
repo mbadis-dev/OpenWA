@@ -294,6 +294,7 @@ const INVITE_CODE_SHAPE =
  * now compares (or that no exposed operation uses any more), so the list cannot rot.
  */
 const UNMAPPED_SCHEMAS = {
+  ButtonChoiceDto: 'part of SendButtonsDto, which no SDK wraps yet',
   CallAckResponseDto: ACK_SHAPE,
   ChannelAckResponseDto: ACK_SHAPE,
   ContactAckResponseDto: ACK_SHAPE,
@@ -306,6 +307,7 @@ const UNMAPPED_SCHEMAS = {
   MessageActionResponseDto: ACK_SHAPE,
   ProfileAckResponseDto: ACK_SHAPE,
   SessionActionResponseDto: ACK_SHAPE,
+  SendButtonsDto: 'POST /messages/send-buttons is called over plain HTTP; no SDK wraps it yet',
   SessionGroupSummaryDto:
     'GET /groups is read as GroupSummary, the shape the create route answers, which also carries a participantsCount and an isAdmin that a listing never sends',
   StatusDeletedResponseDto: 'every client discards the {message} body of DELETE status and returns nothing',

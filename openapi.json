@@ -5859,6 +5859,128 @@
         ]
       }
     },
+    "/api/sessions/{sessionId}/messages/send-buttons": {
+      "post": {
+        "description": "Sends up to three quick-reply buttons as a native-flow interactive message. A tap arrives as a `message.received` whose body is the button label and whose `button.id` is the button id. WhatsApp supports buttons officially only on its Business API, so an app may show the body without the buttons: keep the choices readable in the body. whatsapp-web.js returns 501.",
+        "operationId": "MessageController_sendButtons",
+        "parameters": [
+          {
+            "name": "sessionId",
+            "required": true,
+            "in": "path",
+            "description": "Session ID",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "description": "Optional. Makes the send safe to retry: within 24 hours, a retry with the same key and body replays the first response (marked `Idempotent-Replayed: true`) instead of sending again. 1-255 visible ASCII characters, unique per session. While the first request runs a retry gets 409 `IDEMPOTENCY_KEY_IN_PROGRESS`; after a failure that may have sent the message it gets 409 `IDEMPOTENCY_OUTCOME_UNKNOWN`. A 4xx or 501 refusal before the engine call frees the key. Errors from an engine send keep it taken regardless of HTTP status, including 409.",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SendButtonsDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Buttons message sent",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MessageResponseDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Baileys rejects a phone number reported as unregistered. The request was rejected before anything was sent. Among the causes: the recipient could not be addressed — WhatsApp reports no deliverable id for that `chatId`, which is how it says the number is not on WhatsApp — as well as body validation and a session that is not active.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "The API key is missing, unknown, revoked, or expired",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "The API key's role, session or chat scope, or IP allow-list does not allow this operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "The session is not connected: an engine exists for it but is not `ready`, meaning disconnected, reconnecting, or still initializing, so the request never reached WhatsApp. Wait for `ready` and retry. A session that was never started answers `400` instead, and the session lifecycle routes answer `409` for a conflicting state rather than this. One window answers this while the session still reads `ready`: WhatsApp Web periodically reloads its own page and the engine re-injects into it, and for those few seconds the answer is a `409` naming the reload; retry shortly.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "`IDEMPOTENCY_KEY_REUSED`: the Idempotency-Key was already used with a different route or body.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "501": {
+            "description": "The active engine cannot serve this operation. It is part of the engine contract, but the engine currently running has no implementation for it.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Baileys could not complete the recipient lookup within the request budget. On send routes, no message was handed to WhatsApp for this lookup failure. On Baileys, also when WhatsApp rate-limits the request (code 429: nothing was sent, and a keyed send frees its `Idempotency-Key`) or times out a query it awaits (code 408: the outcome is not proven, and a keyed send keeps its `Idempotency-Key` taken).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Send a message with quick-reply buttons (Baileys only)",
+        "tags": [
+          "messages"
+        ]
+      }
+    },
     "/api/sessions/{sessionId}/messages/reply": {
       "post": {
         "operationId": "MessageController_reply",
@@ -20543,6 +20665,67 @@
           "chatId",
           "name",
           "options"
+        ]
+      },
+      "ButtonChoiceDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Id returned as `button.id` when the recipient taps this button",
+            "maxLength": 256,
+            "example": "1"
+          },
+          "text": {
+            "type": "string",
+            "description": "Visible label; a tap arrives as a message whose body is this label",
+            "maxLength": 25,
+            "example": "Yes"
+          }
+        },
+        "required": [
+          "id",
+          "text"
+        ]
+      },
+      "SendButtonsDto": {
+        "type": "object",
+        "properties": {
+          "chatId": {
+            "type": "string",
+            "description": "Chat ID (e.g. 628123456789@c.us or 1203630000@g.us)",
+            "maxLength": 255
+          },
+          "body": {
+            "type": "string",
+            "description": "Message text shown above the buttons",
+            "maxLength": 1024,
+            "example": "Would you like to return to the main menu?"
+          },
+          "buttons": {
+            "description": "Quick-reply buttons, 1 to 3",
+            "minItems": 1,
+            "maxItems": 3,
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ButtonChoiceDto"
+            }
+          },
+          "header": {
+            "type": "string",
+            "description": "Bold line above the body",
+            "maxLength": 60
+          },
+          "footer": {
+            "type": "string",
+            "description": "Small grey line below the body",
+            "maxLength": 60
+          }
+        },
+        "required": [
+          "chatId",
+          "body",
+          "buttons"
         ]
       },
       "ReplyMessageDto": {

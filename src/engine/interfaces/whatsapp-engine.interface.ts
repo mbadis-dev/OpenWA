@@ -413,6 +413,25 @@ export interface PollInput extends Quotable {
   allowMultipleAnswers?: boolean;
 }
 
+/** A quick-reply choice on an outbound buttons message. */
+export interface ButtonChoice {
+  /** Stable id echoed back when the recipient taps the button (see inbound `button.id`). */
+  id: string;
+  /** Visible label. A tap arrives as an ordinary message whose body is this label. */
+  text: string;
+}
+
+export interface ButtonsInput {
+  /** Message text shown above the buttons. */
+  body: string;
+  /** Quick-reply choices, in display order. */
+  buttons: ButtonChoice[];
+  /** Optional bold line above the body. */
+  header?: string;
+  /** Optional small grey line below the body. */
+  footer?: string;
+}
+
 export interface ReactionSender {
   senderId: string;
   emoji: string;
@@ -1176,6 +1195,16 @@ export interface MessagingCapability {
   sendStickerMessage(chatId: string, media: MediaInput): Promise<MessageResult>;
 
   sendPollMessage(chatId: string, poll: PollInput): Promise<MessageResult>;
+
+  /**
+   * Send a message with quick-reply buttons. **Baileys only**: WhatsApp Web no longer sends
+   * buttons, so whatsapp-web.js throws EngineNotSupportedError (HTTP 501).
+   *
+   * Baileys sends a native-flow `interactiveMessage` with the `biz` node WhatsApp requires to render
+   * it. WhatsApp does not officially support buttons outside its Business API, so a recipient's app
+   * may show the body without the buttons. Callers should keep the choices readable in the body.
+   */
+  sendButtonsMessage(chatId: string, buttons: ButtonsInput): Promise<MessageResult>;
 
   /**
    * Reply to a message, quoting it. `mentions` tags participants exactly as on the send routes: the

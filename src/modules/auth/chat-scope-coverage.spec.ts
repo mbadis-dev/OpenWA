@@ -110,6 +110,7 @@ export const MUST_STAY_MARKED: ReadonlyArray<readonly [string, string, string]> 
   ['message.controller.ts', 'sendContact', 'fenced'],
   ['message.controller.ts', 'sendSticker', 'fenced'],
   ['message.controller.ts', 'sendPoll', 'fenced'],
+  ['message.controller.ts', 'sendButtons', 'fenced'],
   ['message.controller.ts', 'reply', 'fenced'],
   ['message.controller.ts', 'clickButton', 'fenced'],
   ['message.controller.ts', 'forward', 'fenced'],

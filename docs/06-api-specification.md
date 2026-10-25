@@ -47,7 +47,7 @@ API keys carry one of three roles, ordered by privilege:
 
 A key may additionally be scoped to specific sessions (`allowedSessions`) and/or source IPs (`allowedIps`). The scope/IP check runs in the guard **before** any role check, so a request outside that scope is rejected with `403` even if the role would otherwise allow it. `401` is kept for a missing, unknown, revoked or expired key.
 
-A key may also be restricted to selected chats (`allowedChats`: group `<id>@g.us`, contact `<phone>@c.us` or `<lid>@lid`, or a bare phone number, which is stored as `<phone>@c.us`), at most 2000 entries. An empty or absent list leaves the key unrestricted. A chat-restricted key is **denied by default**: it may call only routes marked as chat-scoped, and every other route (webhooks, automation, status, channels, key management, and any route added later) answers `403 "API key is restricted to selected chats"` after the role check. The chat-scoped routes are the message sends (text, template, image, video, audio, document, location, contact, sticker, poll, reply, click-button, forward, bulk and `send-product`), react, edit, delete, pin, unpin, star and vote-poll, and the history, reactions and media of one chat; the chat actions (read, unread, archive, mute, pin, delete, typing, clearing a chat's messages) and a chat's presence (subscribe and read); one contact's read, profile picture, phone lookup, update, delete, block and unblock routes; one group's detail, settings, subject, description, leave and picture routes; the label routes that address a chat; and the session's own detail (`GET /api/sessions/:sessionId`), which names no chat. On a chat-scoped route, every chat id the request names (a `:chatId` / `:groupId` / `:contactId` path param, `?chatId=`, a body `chatId` / `fromChatId` / `toChatId`, and each `messages[].chatId` of a bulk send) must be inside the allowlist, or the request answers `403 "API key not authorized for this chat"`; a contact entry also matches its mapped `@lid` form, and the reverse. The chat, group, contact and label-chat list routes (`GET /api/sessions/:sessionId/chats`, `/groups`, `/contacts` and `/labels/:labelId/chats`) return only the allowed entries, filtered before paging. `GET /api/search` with the built-in provider narrows its hits to the allowed chats before `limit`/`offset`/`total` apply, and an optional `?chatId=` must name an allowed chat. Plugin providers return `403` for these keys before the worker is invoked; set `SEARCH_PROVIDER=builtin-fts` to enable scoped search. `GET /api/sessions/:sessionId/groups/:groupId` and its `GET`/`PUT .../settings` admit a group inside the allowlist and answer `403` for any other. On `GET /api/sessions/:sessionId/messages` such a key must pass `?chatId=`; omitting it answers `403`. A `quotedMessageId` is refused with `403` everywhere except the reply route, which binds the quote to the chat it sends into. The `/events` WebSocket admits chat-restricted keys and delivers only chat events inside their allowlist. MCP tools enforce the same chat fence, filter list results before paging, and refuse tools without chat-scoped authorization. The Bull Board queue dashboard still refuses chat-restricted keys with `403`.
+A key may also be restricted to selected chats (`allowedChats`: group `<id>@g.us`, contact `<phone>@c.us` or `<lid>@lid`, or a bare phone number, which is stored as `<phone>@c.us`), at most 2000 entries. An empty or absent list leaves the key unrestricted. A chat-restricted key is **denied by default**: it may call only routes marked as chat-scoped, and every other route (webhooks, automation, status, channels, key management, and any route added later) answers `403 "API key is restricted to selected chats"` after the role check. The chat-scoped routes are the message sends (text, template, image, video, audio, document, location, contact, sticker, poll, buttons, reply, click-button, forward, bulk and `send-product`), react, edit, delete, pin, unpin, star and vote-poll, and the history, reactions and media of one chat; the chat actions (read, unread, archive, mute, pin, delete, typing, clearing a chat's messages) and a chat's presence (subscribe and read); one contact's read, profile picture, phone lookup, update, delete, block and unblock routes; one group's detail, settings, subject, description, leave and picture routes; the label routes that address a chat; and the session's own detail (`GET /api/sessions/:sessionId`), which names no chat. On a chat-scoped route, every chat id the request names (a `:chatId` / `:groupId` / `:contactId` path param, `?chatId=`, a body `chatId` / `fromChatId` / `toChatId`, and each `messages[].chatId` of a bulk send) must be inside the allowlist, or the request answers `403 "API key not authorized for this chat"`; a contact entry also matches its mapped `@lid` form, and the reverse. The chat, group, contact and label-chat list routes (`GET /api/sessions/:sessionId/chats`, `/groups`, `/contacts` and `/labels/:labelId/chats`) return only the allowed entries, filtered before paging. `GET /api/search` with the built-in provider narrows its hits to the allowed chats before `limit`/`offset`/`total` apply, and an optional `?chatId=` must name an allowed chat. Plugin providers return `403` for these keys before the worker is invoked; set `SEARCH_PROVIDER=builtin-fts` to enable scoped search. `GET /api/sessions/:sessionId/groups/:groupId` and its `GET`/`PUT .../settings` admit a group inside the allowlist and answer `403` for any other. On `GET /api/sessions/:sessionId/messages` such a key must pass `?chatId=`; omitting it answers `403`. A `quotedMessageId` is refused with `403` everywhere except the reply route, which binds the quote to the chat it sends into. The `/events` WebSocket admits chat-restricted keys and delivers only chat events inside their allowlist. MCP tools enforce the same chat fence, filter list results before paging, and refuse tools without chat-scoped authorization. The Bull Board queue dashboard still refuses chat-restricted keys with `403`.
 
 ### API-Key Lifecycle
 
@@ -1302,7 +1302,7 @@ All routes are mounted under `/api/sessions/:sessionId/messages`. Reads (`GET` h
 
 #### Idempotent sends
 
-The single-recipient send routes (`send-text`, `send-template`, `send-image`, `send-video`, `send-audio`, `send-document`, `send-location`, `send-contact`, `send-sticker`, `send-poll`, `reply`, `forward`) accept an optional `Idempotency-Key` request header, so a client can retry after a timeout or a dropped connection without sending the message twice. Without the header nothing changes.
+The single-recipient send routes (`send-text`, `send-template`, `send-image`, `send-video`, `send-audio`, `send-document`, `send-location`, `send-contact`, `send-sticker`, `send-poll`, `send-buttons`, `reply`, `forward`) accept an optional `Idempotency-Key` request header, so a client can retry after a timeout or a dropped connection without sending the message twice. Without the header nothing changes.
 
 The key is 1-255 visible ASCII characters (a UUID works), unique per session, and is held for **24 hours** from the first request. Within that window:
 
@@ -2179,6 +2179,49 @@ Send a native WhatsApp poll.
 ```
 
 **Errors:** `400` validation failure (option count/length) / session not active / unknown body field · `401` missing/invalid API key · `403` key role below OPERATOR · `404` the `quotedMessageId` could not be resolved (see Quoted sends) · `500` engine error · `409` conflict or engine not ready (retryable) · `501` whatsapp-web.js cannot send a poll to a status or broadcast list (`@broadcast`), nor one with `quotedMessageId` to a channel (`<id>@newsletter`); nothing is sent · `422` the `Idempotency-Key` was already used for a different request (see [Idempotent sends](#idempotent-sends)) · `503` Baileys recipient lookup failed or timed out before the operation was sent, or WhatsApp rate-limited the send (code 429: nothing was sent, the `Idempotency-Key` is freed) or timed out a query it awaits (code 408: the outcome is not proven, the key stays taken)
+
+#### POST /api/sessions/:sessionId/messages/send-buttons
+
+Send a message with up to three quick-reply buttons. **Baileys only.**
+
+**Auth:** API key (OPERATOR)
+
+**Path parameters**
+
+| Name      | Type   | Description |
+| --------- | ------ | ----------- |
+| sessionId | string | Session ID  |
+
+**Request body** — `SendButtonsDto`
+
+| Field   | Type     | Required | Constraints                                                              | Description                           |
+| ------- | -------- | -------- | ------------------------------------------------------------------------ | ------------------------------------- |
+| chatId  | string   | Yes      | non-empty, max 255                                                       | Target chat                           |
+| body    | string   | Yes      | non-empty, max 1024                                                      | Message text shown above the buttons  |
+| buttons | object[] | Yes      | 1–3 items of `{ id, text }`: `id` max 256, `text` max 25, both non-empty | Quick-reply choices, in display order |
+| header  | string   | No       | max 60                                                                   | Bold line above the body              |
+| footer  | string   | No       | max 60                                                                   | Small grey line below the body        |
+
+```json
+{
+  "chatId": "628123456789@c.us",
+  "body": "Would you like to return to the main menu?",
+  "buttons": [
+    { "id": "1", "text": "Yes" },
+    { "id": "2", "text": "No" }
+  ]
+}
+```
+
+**Response** `201`
+
+```json
+{ "messageId": "true_628123456789@c.us_3EB0ABCD", "timestamp": 1719312000 }
+```
+
+Baileys sends a native-flow `interactiveMessage` with one `quick_reply` button per choice, relayed with the `biz` node WhatsApp needs to render it. A tap arrives as `message.received` with the label as `body` and `button: { id, text }`. The stored message has type `text` and keeps the choices in `metadata.buttons`. WhatsApp supports buttons officially only on its Business API, so an app may show the body without the buttons: keep the choices readable in the body.
+
+**Errors:** `400` validation failure (button count/length) / session not active / recipient not on WhatsApp / unknown body field · `401` missing/invalid API key · `403` key role below OPERATOR · `500` engine error · `409` conflict or engine not ready (retryable) · `501` whatsapp-web.js cannot send buttons; nothing is sent · `422` the `Idempotency-Key` was already used for a different request (see [Idempotent sends](#idempotent-sends)) · `503` Baileys recipient lookup failed or timed out before the operation was sent, or WhatsApp rate-limited the send (code 429: nothing was sent, the `Idempotency-Key` is freed) or timed out a query it awaits (code 408: the outcome is not proven, the key stays taken)
 
 #### POST /api/sessions/:sessionId/messages/reply
 

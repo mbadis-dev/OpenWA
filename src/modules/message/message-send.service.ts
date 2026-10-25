@@ -540,6 +540,33 @@ export class MessageSendService {
     return this.persistSentState(message, result);
   }
 
+  async sendButtons(
+    sessionId: string,
+    dto: { chatId: string; body: string; buttons: { id: string; text: string }[]; header?: string; footer?: string },
+  ): Promise<MessageResponseDto> {
+    const { message, finalDto, engine } = await this.applySendingGate(sessionId, 'buttons', dto, finalDto => ({
+      chatId: finalDto.chatId,
+      body: finalDto.body,
+      type: 'text',
+      metadata: {
+        buttons: finalDto.buttons.map(button => ({ id: button.id, text: button.text })),
+      },
+    }));
+
+    let result: MessageResult;
+    try {
+      result = await engine.sendButtonsMessage(finalDto.chatId, {
+        body: finalDto.body,
+        buttons: finalDto.buttons.map(button => ({ id: button.id, text: button.text })),
+        header: finalDto.header,
+        footer: finalDto.footer,
+      });
+    } catch (error) {
+      return this.failSend(sessionId, 'buttons', message, finalDto, error);
+    }
+    return this.persistSentState(message, result);
+  }
+
   async sendSticker(sessionId: string, dto: SendMediaMessageDto): Promise<MessageResponseDto> {
     const {
       message,

@@ -5,7 +5,7 @@ import { EngineRegistry } from '../../engine/engine-registry.service';
 import { MessageProjector } from '../session/message-projector.service';
 import { SendTextMessageDto, SendMediaMessageDto, SendAudioMessageDto, MessageResponseDto } from './dto';
 import { SendTemplateMessageDto } from './dto/send-template.dto';
-import { ReplyMessageDto, ClickButtonDto } from './dto/message-actions.dto';
+import { ReplyMessageDto, ClickButtonDto, SendButtonsDto } from './dto/message-actions.dto';
 import { Message } from './entities/message.entity';
 import { HookManager, applySendingGate } from '../../core/hooks';
 import { SendPacingService } from './send-pacing.service';
@@ -264,6 +264,10 @@ export class MessageService implements PluginMessagePort {
     dto: { chatId: string; name: string; options: string[]; allowMultipleAnswers?: boolean; quotedMessageId?: string },
   ): Promise<MessageResponseDto> {
     return this.sender.sendPoll(sessionId, dto);
+  }
+
+  sendButtons(sessionId: string, dto: SendButtonsDto): Promise<MessageResponseDto> {
+    return this.sender.sendButtons(sessionId, dto);
   }
 
   sendSticker(sessionId: string, dto: SendMediaMessageDto): Promise<MessageResponseDto> {

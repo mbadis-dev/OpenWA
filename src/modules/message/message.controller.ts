@@ -35,6 +35,7 @@ import {
   SendLocationDto,
   SendContactDto,
   SendPollDto,
+  SendButtonsDto,
   ReplyMessageDto,
   ForwardMessageDto,
   ReactMessageDto,
@@ -459,6 +460,32 @@ export class MessageController {
   @ApiResponse({ status: 503, description: SEND_503 })
   async sendPoll(@Param('sessionId') sessionId: string, @Body() dto: SendPollDto): Promise<MessageResponseDto> {
     return this.messageService.sendPoll(sessionId, dto);
+  }
+
+  @ChatScoped('fenced')
+  @Post('send-buttons')
+  @IdempotentSend()
+  @RequireRole(ApiKeyRole.OPERATOR)
+  @ApiOperation({
+    summary: 'Send a message with quick-reply buttons (Baileys only)',
+    description:
+      'Sends up to three quick-reply buttons as a native-flow interactive message. A tap arrives as a ' +
+      '`message.received` whose body is the button label and whose `button.id` is the button id. ' +
+      'WhatsApp supports buttons officially only on its Business API, so an app may show the body ' +
+      'without the buttons: keep the choices readable in the body. whatsapp-web.js returns 501.',
+  })
+  @ApiParam({ name: 'sessionId', description: 'Session ID' })
+  @ApiResponse({
+    status: 201,
+    description: 'Buttons message sent',
+    type: MessageResponseDto,
+  })
+  @ApiResponse({ status: 409, description: ENGINE_NOT_READY_409 })
+  @ApiResponse({ status: 400, description: RECIPIENT_UNREACHABLE_400 })
+  @ApiResponse({ status: 501, description: ENGINE_NOT_SUPPORTED_501 })
+  @ApiResponse({ status: 503, description: SEND_503 })
+  async sendButtons(@Param('sessionId') sessionId: string, @Body() dto: SendButtonsDto): Promise<MessageResponseDto> {
+    return this.messageService.sendButtons(sessionId, dto);
   }
 
   @ChatQuotedAllowed()

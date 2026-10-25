@@ -730,6 +730,13 @@ export class WhatsAppWebJsAdapter implements IWhatsAppEngine {
     return this.messaging.votePoll(chatId, pollMessageId, options);
   }
 
+  // WhatsApp Web dropped button sends: the library's Buttons class goes out as plain text or not at
+  // all, so this is a 501 the caller can fall back from rather than a send that silently degrades.
+  // eslint-disable-next-line @typescript-eslint/require-await
+  async sendButtonsMessage(): Promise<MessageResult> {
+    throw new EngineNotSupportedError('sendButtonsMessage');
+  }
+
   // whatsapp-web.js has no interactive button-reply send path; the parameters are not named so the
   // method reads as the 501 it is, and TypeScript accepts the narrower signature for the interface.
   // eslint-disable-next-line @typescript-eslint/require-await

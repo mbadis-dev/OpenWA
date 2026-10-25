@@ -2,13 +2,16 @@ import { queryLidPhone } from './baileys-identity-query';
 import type * as BaileysLib from '@whiskeysockets/baileys';
 import type {
   AnyMessageContent,
+  BinaryNode,
   MiscMessageGenerationOptions,
   WAMessage,
+  WAMessageContent,
   WAMessageKey,
   WASocket,
 } from '@whiskeysockets/baileys';
 import { generateSafeLinkPreview } from './safe-link-preview';
 import {
+  ButtonsInput,
   CallLinkType,
   CustomLinkPreview,
   ChatState,
@@ -273,6 +276,22 @@ export async function resolveMediaBuffer(
   }
   return { data: Buffer.from(media.data, 'base64'), mimetype: media.mimetype };
 }
+
+/**
+ * The stanza node that marks a relayed message as a native-flow interactive message. WhatsApp
+ * drops an `interactiveMessage` sent without it, so the recipient sees nothing at all.
+ */
+export const NATIVE_FLOW_BIZ_NODE: BinaryNode = {
+  tag: 'biz',
+  attrs: {},
+  content: [
+    {
+      tag: 'interactive',
+      attrs: { type: 'native_flow', v: '1' },
+      content: [{ tag: 'native_flow', attrs: { v: '9', name: 'mixed' } }],
+    },
+  ],
+};
 
 /**
  * Give a WhatsApp throttle or timeout answer (WA code 429 or 408) its retryable 503 instead of letting
@@ -615,6 +634,31 @@ export class BaileysMessaging {
     );
   }
 
+  /**
+   * Send quick-reply buttons as a native-flow `interactiveMessage`.
+   *
+   * Baileys' sendMessage no longer generates any buttons content, and it builds its own additional
+   * nodes, so the message is generated here and relayed with the `biz` node WhatsApp needs before it
+   * renders the buttons. A tap comes back as an `interactiveResponseMessage`, which the mapper already
+   * surfaces as text with the tapped label as `body` and the id under `button`.
+   */
+  async sendButtonsMessage(chatId: string, input: ButtonsInput): Promise<MessageResult> {
+    this.host.ensureReady();
+    const socket = this.sock();
+    const interactiveMessage = {
+      body: { text: input.body },
+      ...(input.header ? { header: { title: input.header, hasMediaAttachment: false } } : {}),
+      ...(input.footer ? { footer: { text: input.footer } } : {}),
+      nativeFlowMessage: {
+        buttons: input.buttons.map(button => ({
+          name: 'quick_reply',
+          buttonParamsJson: JSON.stringify({ display_text: button.text, id: button.id }),
+        })),
+      },
+    };
+    return this.relayContent(chatId, { interactiveMessage }, [NATIVE_FLOW_BIZ_NODE], socket);
+  }
+
   async replyToMessage(chatId: string, quotedMsgId: string, text: string, mentions?: string[]): Promise<MessageResult> {
     this.host.ensureReady();
     const socket = this.sock();
@@ -899,6 +943,41 @@ export class BaileysMessaging {
     const safe = this.previewSafe(content);
     const merged = this.previewSafeOptions(safe, this.withEphemeral(jid, options));
     const sent = await this.send(jid, safe, merged, expected);
+    return this.recordSent(sent, b);
+  }
+
+  /**
+   * Generate a message and relay it with extra stanza nodes, for content that sendMessage cannot
+   * express (it builds its own nodes and drops any the caller needs). Goes through the same recipient
+   * check, ephemeral timer and bookkeeping as {@link sendContent}. Relaying emits no library echo, so
+   * there is no own-send id to remember.
+   */
+  private async relayContent(
+    chatId: string,
+    message: WAMessageContent,
+    additionalNodes: BinaryNode[],
+    expected: WASocket,
+  ): Promise<MessageResult> {
+    const b = await this.host.loadLib();
+    const sock = this.sock(expected);
+    const jid = await this.resolveRecipient(await this.toDeliverableJid(chatId, sock), sock);
+    const ephemeralExpiration = this.host.getEphemeralExpiration(jid);
+    const sent = b.generateWAMessageFromContent(jid, message, {
+      userJid: sock.user?.id ?? this.host.normalizedSelfJid(),
+      messageId: b.generateMessageIDV2(sock.user?.id),
+      ...(ephemeralExpiration === undefined ? {} : { ephemeralExpiration }),
+    });
+    try {
+      await sock.relayMessage(jid, sent.message ?? {}, { messageId: sent.key.id ?? undefined, additionalNodes });
+    } catch (error) {
+      if (this.host.getSocketOrNull() !== sock) throw new EngineNotReadyError();
+      throw mapSendRefusal(error);
+    }
+    return this.recordSent(sent, b);
+  }
+
+  /** Store a completed send, make it the chat preview and emit its echo; shapes the result. */
+  private recordSent(sent: WAMessage | undefined, b: typeof BaileysLib): MessageResult {
     if (sent) {
       void this.host.putStoredMessage(sent)?.catch(err =>
         this.host.logger.warn('Failed to persist sent message to store', {
@@ -948,6 +1027,24 @@ export class BaileysMessaging {
     expected?: WASocket,
   ): Promise<WAMessage | undefined> {
     const sock = this.sock(expected);
+    jid = await this.resolveRecipient(jid, sock);
+    let sent: WAMessage | undefined;
+    try {
+      sent = options ? await sock.sendMessage(jid, content, options) : await sock.sendMessage(jid, content);
+    } catch (error) {
+      if (this.host.getSocketOrNull() !== sock) throw new EngineNotReadyError();
+      throw mapSendRefusal(error);
+    }
+    // Mutations are announced by their library echo; no local callback replaces it.
+    if (!('react' in content || 'delete' in content || 'edit' in content)) this.host.rememberOwnSend(sent?.key?.id);
+    return sent;
+  }
+
+  /**
+   * Confirm a user recipient is on WhatsApp and return the jid to deliver to, which differs when
+   * WhatsApp reports a canonical id for the number. Group, channel and broadcast jids pass through.
+   */
+  private async resolveRecipient(jid: string, sock: WASocket): Promise<string> {
     if (parseWaId(jid).kind === 'user') {
       let numberId: string | null;
       try {
@@ -962,16 +1059,7 @@ export class BaileysMessaging {
       if (canonical !== jid) jid = await this.toDeliverableJid(numberId);
     }
     if (this.host.getSocketOrNull() !== sock) throw new EngineNotReadyError();
-    let sent: WAMessage | undefined;
-    try {
-      sent = options ? await sock.sendMessage(jid, content, options) : await sock.sendMessage(jid, content);
-    } catch (error) {
-      if (this.host.getSocketOrNull() !== sock) throw new EngineNotReadyError();
-      throw mapSendRefusal(error);
-    }
-    // Mutations are announced by their library echo; no local callback replaces it.
-    if (!('react' in content || 'delete' in content || 'edit' in content)) this.host.rememberOwnSend(sent?.key?.id);
-    return sent;
+    return jid;
   }
 
   /**

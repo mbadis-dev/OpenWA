@@ -9902,3 +9902,20 @@ describe('WhatsAppWebJsAdapter per-action log lines', () => {
     expect(debug).toHaveBeenCalledWith(message, expect.objectContaining(meta));
   });
 });
+
+describe('WhatsAppWebJsAdapter sendButtonsMessage (not available on this engine)', () => {
+  // WhatsApp Web dropped button sends, so the library's Buttons class arrives as plain text or not at
+  // all. A 501 lets the caller fall back to its own text prompt instead of a send that silently degrades.
+  it('throws EngineNotSupportedError without calling the library', async () => {
+    const adapter = new WhatsAppWebJsAdapter({ sessionId: 's', sessionDataPath: './data/sessions', puppeteer: {} });
+    const sendMessage = jest.fn();
+    (adapter as unknown as { status: EngineStatus }).status = EngineStatus.READY;
+    (adapter as unknown as { client: unknown }).client = { sendMessage };
+
+    const err: unknown = await adapter.sendButtonsMessage().catch((e: unknown) => e);
+
+    expect(err).toBeInstanceOf(EngineNotSupportedError);
+    expect((err as EngineNotSupportedError).getStatus()).toBe(501);
+    expect(sendMessage).not.toHaveBeenCalled();
+  });
+});

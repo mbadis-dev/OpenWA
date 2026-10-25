@@ -28,6 +28,74 @@
 
 ---
 
+> **About this fork.** This is a fork of [rmyndharis/OpenWA](https://github.com/rmyndharis/OpenWA). It adds one feature: a **buttons module** for sending messages with quick-reply buttons. Everything else matches upstream.
+
+## 🔘 Buttons module (this fork)
+
+`POST /api/sessions/:sessionId/messages/send-buttons` sends a message with up to three quick-reply buttons. It suits menu-driven bots, where a tap is easier than typing a number.
+
+```bash
+curl -X POST http://localhost:2785/api/sessions/my-session/messages/send-buttons \
+  -H "X-API-Key: $OPENWA_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "chatId": "628123456789@c.us",
+    "body": "Would you like to return to the main menu?",
+    "buttons": [
+      { "id": "1", "text": "Yes" },
+      { "id": "2", "text": "No" }
+    ],
+    "footer": "Reply with a number if you do not see buttons"
+  }'
+```
+
+| Field     | Required | Limit                                                 |
+| --------- | -------- | ----------------------------------------------------- |
+| `chatId`  | yes      | A contact (`@c.us`) or group (`@g.us`)                |
+| `body`    | yes      | 1024 characters                                       |
+| `buttons` | yes      | 1 to 3 items, each with an `id` (256) and `text` (25) |
+| `header`  | no       | 60 characters, shown in bold above the body           |
+| `footer`  | no       | 60 characters, shown small below the body             |
+
+The route needs an OPERATOR key and follows the same rules as the other send routes: chat scoping, send pacing, idempotency keys, plugin hooks, and a stored outgoing message. The stored message has type `text` and keeps the buttons under `metadata.buttons`.
+
+**When someone taps a button**, a normal `message.received` webhook arrives. Its `body` is the button label (`"Yes"`) and `button.id` is the id you sent (`"1"`). Bots that already handle typed replies can match the label or the id.
+
+### Engines
+
+| Engine            | Result                                                                                                                                        |
+| ----------------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
+| `baileys`         | Sends a native-flow `interactiveMessage` with `quick_reply` buttons. It is relayed with the `biz` node that WhatsApp needs to render buttons. |
+| `whatsapp-web.js` | Returns **501**. WhatsApp Web no longer sends buttons, and the library's `Buttons` class arrives as plain text or not at all.                 |
+
+To use buttons, set `ENGINE_TYPE=baileys`.
+
+### Limitations
+
+- WhatsApp supports buttons officially only through its Business API. On a regular or WhatsApp Business app account, some WhatsApp versions may show the body without the buttons. Keep the choices readable in the body, for example as a numbered list, so the message still works.
+- If the send fails (501 on whatsapp-web.js, or an engine error), send the same prompt with `send-text` instead.
+- Only quick-reply buttons are supported. URL buttons, call buttons and list menus are not.
+
+### Code
+
+| Part                    | File                                                                                                                                                               |
+| ----------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Route                   | [`message.controller.ts`](src/modules/message/message.controller.ts) (`sendButtons`)                                                                               |
+| Request validation      | [`message-actions.dto.ts`](src/modules/message/dto/message-actions.dto.ts) (`SendButtonsDto`, `ButtonChoiceDto`)                                                   |
+| Send pipeline           | [`message-send.service.ts`](src/modules/message/message-send.service.ts) (`sendButtons`)                                                                           |
+| Engine contract         | [`whatsapp-engine.interface.ts`](src/engine/interfaces/whatsapp-engine.interface.ts) (`sendButtonsMessage`, `ButtonsInput`)                                        |
+| Baileys implementation  | [`baileys-messaging.ts`](src/engine/adapters/baileys-messaging.ts) (`sendButtonsMessage`, `relayContent`, `NATIVE_FLOW_BIZ_NODE`)                                  |
+| whatsapp-web.js refusal | [`whatsapp-web-js.adapter.ts`](src/engine/adapters/whatsapp-web-js.adapter.ts)                                                                                     |
+| Tests                   | [`baileys-send-buttons.spec.ts`](src/engine/adapters/baileys-send-buttons.spec.ts), [`send-buttons.dto.spec.ts`](src/modules/message/dto/send-buttons.dto.spec.ts) |
+
+The published `ghcr.io/rmyndharis/openwa` image does not include this module. Build the image from this repository instead:
+
+```bash
+docker build -t openwa-buttons .
+```
+
+---
+
 ## ✨ Why OpenWA?
 
 **OpenWA** is a free, open-source WhatsApp API Gateway designed for developers who need full control over their messaging infrastructure—without vendor lock-in or hidden paywalls.
